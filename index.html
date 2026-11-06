@@ -424,7 +424,6 @@
         });
 
       // BƯỚC B: Gửi điểm danh cho "Phút Hiện Tại"
-      // SessionStorage giúp đảm bảo trong 1 phút, dù F5 liên tục cũng chỉ đếm 1 lần cho thiết bị này.
       const lastPing = sessionStorage.getItem('medpass_ping_minute');
       if (lastPing != currentMinute) {
           sessionStorage.setItem('medpass_ping_minute', currentMinute);
@@ -438,9 +437,9 @@
     // =========================================================================
     function initApp() {
       buildTopicDropdowns();
-      updateTrafficCounters(); // Kích hoạt bộ đếm lượng truy cập ngay khi load
+      updateTrafficCounters(); 
 
-      if (!SHEET_CSV_URL || SHEET_CSV_URL.includes("LINK_CSV_GOOGLE_SHEET_CỦA_BẠN")) {
+      if (!SHEET_CSV_URL || SHEET_CSV_URL.includes("https://docs.google.com/spreadsheets/d/e/2PACX-1vTZn-givAZO5QLXCt0UmSe25YTn477CbkQotFJ47ODyAq0YEmK8jTNbOxBGRmHBINuCI8rhbZZFejq-/pub?output=csv")) {
         useFallbackData();
         return;
       }
@@ -502,6 +501,15 @@
       document.getElementById('home-dashboard').classList.remove('hidden');
     }
 
+    function shuffleArray(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
     function startPracticeMode() {
       currentMode = 'practice';
       const selected = document.getElementById('home-topic-select').value;
@@ -541,7 +549,7 @@
       currentMode = 'exam';
       const minutes = parseInt(document.getElementById('home-time-slider').value, 10);
 
-      activeQuestions = [...allQuestions].sort(() => 0.5 - Math.random());
+      activeQuestions = shuffleArray(allQuestions);
       userAnswers = {};
       flaggedSet.clear();
       currentIdx = 0;
