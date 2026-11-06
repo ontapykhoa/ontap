@@ -460,7 +460,7 @@
         });
     }
 
-    function renderLeaderboard(records) {
+ function renderLeaderboard(records) {
         const tbody = document.getElementById('leaderboard-body');
         tbody.innerHTML = records.map((r, i) => {
             let rankBadge = i + 1;
@@ -474,6 +474,8 @@
                 <td class="p-3 font-bold text-[#0f4c81]">${r.user}</td>
                 <td class="p-3 text-center">${r.score} / ${r.total}</td>
                 <td class="p-3 text-center font-bold ${r.pct >= 70 ? 'text-emerald-600' : 'text-rose-600'}">${r.pct}%</td>
+                
+                <!-- DÒNG CẦN SỬA LÀ DÒNG BÊN DƯỚI -->
                 <td class="p-3 text-right text-xs text-slate-500">${r.date.split(',')[0]}</td>
             </tr>
         `}).join('');
