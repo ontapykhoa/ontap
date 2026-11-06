@@ -73,14 +73,13 @@
   <main id="home-dashboard" class="hidden flex-1 max-w-5xl w-full mx-auto p-4 md:p-8 flex flex-col justify-center">
     <div class="bg-gradient-to-r from-[#0f4c81] to-[#1c6ca4] text-white rounded-2xl p-6 md:p-8 shadow-lg mb-6 relative overflow-hidden">
       <div class="relative z-10 max-w-2xl">
-        <span class="inline-block bg-amber-400 text-[#0f4c81] text-xs font-bold uppercase px-2.5 py-1 rounded-md mb-3 tracking-wide">Quyết định số 22/QĐ-HĐYKQG</span>
         <h2 class="text-xl md:text-2xl font-bold mb-2">Hệ Thống Ôn Luyện Đánh Giá Năng Lực Bác Sĩ Y Khoa</h2>
         <p class="text-xs md:text-sm text-blue-100 leading-relaxed">
-          Ngân hàng câu hỏi trắc nghiệm lâm sàng phân tầng theo 128 vấn đề cốt lõi. Mô phỏng phần mềm thi máy tính (CBT) chuẩn hóa của Hội đồng Y khoa Quốc gia.
+          Ngân hàng câu hỏi trắc nghiệm lâm sàng theo 128 vấn đề cốt lõi. Mô phỏng phần mềm thi máy tính (CBT) chuẩn hóa của Hội đồng Y khoa Quốc gia.
         </p>
         <div class="mt-4 flex flex-wrap gap-4 text-xs text-blue-200">
-          <span class="bg-blue-800/50 px-3 py-1.5 rounded-lg"><i class="fa-solid fa-book-medical mr-1.5"></i> Luyện tập (Cơ bản): <strong id="count-basic" class="text-white font-bold">0</strong> câu</span>
-          <span class="bg-rose-800/50 px-3 py-1.5 rounded-lg"><i class="fa-solid fa-brain mr-1.5"></i> Thi thử (Vận dụng cao): <strong id="count-advanced" class="text-white font-bold">0</strong> câu</span>
+          <span class="bg-blue-800/50 px-3 py-1.5 rounded-lg"><i class="fa-solid fa-book-medical mr-1.5"></i> Luyện tập: <strong id="count-basic" class="text-white font-bold">0</strong> câu</span>
+          <span class="bg-rose-800/50 px-3 py-1.5 rounded-lg"><i class="fa-solid fa-brain mr-1.5"></i> Thi thử: <strong id="count-advanced" class="text-white font-bold">0</strong> câu</span>
         </div>
       </div>
       <div class="absolute -right-6 -bottom-8 text-blue-400/20 text-9xl pointer-events-none">
@@ -88,7 +87,7 @@
       </div>
     </div>
 
-    <!-- KHỐI THỐNG KÊ LƯU LƯỢNG TRUY CẬP (ĐẾM THỰC TẾ) -->
+    <!-- KHỐI THỐNG KÊ LƯU LƯỢNG TRUY CẬP -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
       <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-3.5">
         <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl font-bold relative shrink-0">
@@ -124,14 +123,14 @@
     <!-- Hai Phân Hệ -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       
-      <!-- Chế độ Luyện Tập (Bộ Cơ Bản) -->
+      <!-- Chế độ Luyện Tập -->
       <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col justify-between hover:shadow-md transition">
         <div>
           <div class="w-12 h-12 bg-blue-50 text-[#0f4c81] rounded-xl flex items-center justify-center text-2xl font-bold mb-4">
             <i class="fa-solid fa-book-open-reader"></i>
           </div>
-          <h3 class="text-lg font-bold text-slate-900 mb-1">Bộ Luyện Tập (Mức Độ Cơ Bản)</h3>
-          <p class="text-xs text-slate-500 mb-4 leading-relaxed">Ôn tập không áp lực thời gian, hiển thị đáp án và biện luận chi tiết ngay sau mỗi câu.</p>
+          <h3 class="text-lg font-bold text-slate-900 mb-1">Luyện Tập</h3>
+          <p class="text-xs text-slate-500 mb-4 leading-relaxed">Ôn tập không tính thời gian, hiển thị đáp án và giải thích chi tiết sau mỗi câu.</p>
           <div class="space-y-3 mb-6">
             <label class="block text-xs font-bold text-slate-700">Chọn nhóm chuyên môn / hệ cơ quan:</label>
             <select id="home-topic-select" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-xs text-slate-800 font-medium outline-none"></select>
@@ -144,13 +143,12 @@
 
       <!-- Chế độ Thi Thử (Bộ Vận Dụng Cao) -->
       <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col justify-between hover:shadow-md transition relative overflow-hidden">
-        <div class="absolute top-0 right-0 bg-rose-600 text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl shadow-sm">Khó (Bloom 3-6)</div>
         <div>
           <div class="w-12 h-12 bg-rose-50 text-rose-600 rounded-xl flex items-center justify-center text-2xl font-bold mb-4">
             <i class="fa-solid fa-stopwatch"></i>
           </div>
-          <h3 class="text-lg font-bold text-slate-900 mb-1">Mô Phỏng Thi Thử (Vận Dụng Cao)</h3>
-          <p class="text-xs text-slate-500 mb-4 leading-relaxed">Hệ thống sẽ lấy toàn bộ câu hỏi mức độ Phân tích/Đánh giá để tạo đề. Khóa đáp án, trộn đề ngẫu nhiên, bấm giờ và lưu BXH.</p>
+          <h3 class="text-lg font-bold text-slate-900 mb-1">Mô Phỏng Thi Thử</h3>
+          <p class="text-xs text-slate-500 mb-4 leading-relaxed">Hệ thống sẽ khóa đáp án, trộn đề ngẫu nhiên, bấm giờ và lưu BXH.</p>
           <div class="space-y-4 mb-6">
             <div>
               <div class="flex justify-between items-center text-xs font-bold text-slate-700 mb-1.5">
@@ -188,7 +186,7 @@
           </div>
           <div id="options-display" class="space-y-3 mb-6"></div>
           <div id="rationale-box" class="hidden p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-sm mb-4">
-            <div class="font-bold text-emerald-900 mb-1 flex items-center"><i class="fa-solid fa-circle-check mr-2 text-emerald-600"></i> Biện luận chẩn đoán:</div>
+            <div class="font-bold text-emerald-900 mb-1 flex items-center"><i class="fa-solid fa-circle-check mr-2 text-emerald-600"></i> Giải thích:</div>
             <p id="rationale-text" class="text-emerald-800 mb-2 leading-relaxed whitespace-pre-line"></p>
             <div id="reference-display" class="text-xs text-slate-600 italic"></div>
           </div>
@@ -335,7 +333,7 @@
       { name: "Thai kỳ, Chuyển dạ, Sinh đẻ và Hậu sản (Vấn đề 74 - 84)" }, { name: "Hệ sinh dục, vú và sức khoẻ sinh sản (Vấn đề 85 - 93)" },
       { name: "Hệ nội tiết - dinh dưỡng - chuyển hóa (Vấn đề 94 - 100)" }, { name: "Rối loạn đa cơ quan (Vấn đề 101 - 110)" },
       { name: "Y học cấp cứu (Vấn đề 111 - 122)" }, { name: "Thống kê y sinh học & Diễn giải y văn (Vấn đề 123 - 124)" },
-      { name: "Khoa học xã hội trong y học & Y đức (Vấn đề 125 - 128)" }, { name: "ALL - Trộn toàn bộ ngân hàng đề" }
+      { name: "Khoa học xã hội trong y học & Y đức (Vấn đề 125 - 128)" }, { name: "Toàn bộ ngân hàng đề" }
     ];
 
     let allQuestions = [], basicQuestions = [], advancedQuestions = [];
@@ -528,8 +526,46 @@
       fetch(`https://countapi.mileshilliard.com/api/v1/${isNewSession?'hit':'get'}/${dateKey}`)
         .then(r => r.json()).then(data => { if(data && data.value) document.getElementById('stat-today-visits').innerText = Number(data.value).toLocaleString('vi-VN'); }).catch(()=>{});
         
-      document.getElementById('stat-online-users').innerText = Math.floor(Math.random() * 6) + 1 + " người";
+// Cấu hình Firebase Realtime Database
+const firebaseConfig = {
+  apiKey: "AIzaSyBD71Ubgi4xuvpWfW-WJP1bVi8GK3TduGE",
+  authDomain: "ontapykhoa-6911b.firebaseapp.com",
+  databaseURL: "https://ontapykhoa-6911b-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "ontapykhoa-6911b",
+  storageBucket: "ontapykhoa-6911b.firebasestorage.app",
+  messagingSenderId: "310210759416",
+  appId: "1:310210759416:web:bc059e1cece9ac5079c90d",
+  measurementId: "G-0VPKTSF5BD"
+};
 
+// Khởi tạo Firebase
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+const db = firebase.database();
+
+// Ghi nhận phiên truy cập hiện tại
+const userSessionRef = db.ref('online_sessions').push();
+const connectedRef = db.ref('.info/connected');
+
+connectedRef.on('value', (snap) => {
+  if (snap.val() === true) {
+    // Khi tab kết nối: ghi nhận online
+    userSessionRef.set(true);
+
+    // Khi người dùng tắt tab hoặc mất mạng: tự động xóa
+    userSessionRef.onDisconnect().remove();
+  }
+});
+
+// Cập nhật số người online thực tế lên giao diện
+db.ref('online_sessions').on('value', (snapshot) => {
+  const onlineCount = snapshot.numChildren();
+  const el = document.getElementById('stat-online-users');
+  if (el) {
+    el.innerText = (onlineCount || 1) + " người";
+  }
+});
       Papa.parse(SHEET_CSV_URL, {
         download: true, header: true, skipEmptyLines: true,
         complete: function(results) {
@@ -801,5 +837,7 @@
 
     window.onload = initApp;
   </script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 </body>
 </html>
