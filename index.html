@@ -476,7 +476,7 @@
                 <td class="p-3 text-center font-bold ${r.pct >= 70 ? 'text-emerald-600' : 'text-rose-600'}">${r.pct}%</td>
                 
                 <!-- DÒNG CẦN SỬA LÀ DÒNG BÊN DƯỚI -->
-                <td class="p-3 text-right text-xs text-slate-500">${r.date.split(',')[0]}</td>
+               <td class="p-3 text-right text-xs text-slate-500">${new Date(r.date).toLocaleString('vi-VN', {hour: '2-digit', minute:'2-digit', day: '2-digit', month: '2-digit', year: 'numeric'})}</td>
             </tr>
         `}).join('');
     }
