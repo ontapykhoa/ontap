@@ -387,10 +387,17 @@
         btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i>';
         btn.disabled = true;
 
-        fetch(GAS_API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams({ action: authMode, user: user, pass: pass })
+        // Bỏ các Headers phức tạp để tránh lỗi CORS
+        // Gửi data dưới dạng tham số URL
+        const queryParams = new URLSearchParams({
+            action: authMode, 
+            user: user, 
+            pass: pass
+        }).toString();
+
+        fetch(`${GAS_API_URL}?${queryParams}`, {
+            method: 'POST'
+            // Chú ý: Không thêm mode: 'no-cors' vì nó sẽ làm mất dữ liệu phản hồi (JSON)
         })
         .then(res => res.json())
         .then(data => {
@@ -401,15 +408,16 @@
                 if (authMode === 'register') alert("Đăng ký thành công! Đã tự động đăng nhập.");
                 doLogin(user);
             } else {
-                errEl.innerText = data.message;
+                errEl.innerText = data.message || "Lỗi máy chủ!";
                 errEl.classList.remove('hidden');
             }
         })
         .catch(err => {
             btn.disabled = false;
             btn.innerHTML = authMode === 'login' ? '<span>ĐĂNG NHẬP</span>' : '<span>TẠO TÀI KHOẢN</span>';
-            errEl.innerText = "Lỗi kết nối máy chủ! Hãy thử lại.";
+            errEl.innerText = "Lỗi CORS hoặc không thể kết nối Google Apps Script!";
             errEl.classList.remove('hidden');
+            console.error(err);
         });
     }
 
@@ -472,28 +480,48 @@
     }
 
     function saveScore(score, total, pct) {
-        if (!currentUser) return;
+        if (!currentUser) return; // Chỉ lưu nếu đã đăng nhập
+
         const msgEl = document.getElementById('score-saving-msg');
         msgEl.classList.remove('hidden');
         
+        // Trả lại trạng thái loading ban đầu (nếu người dùng thi nhiều lần)
+        msgEl.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Đang lưu điểm lên Bảng xếp hạng...';
+        msgEl.classList.add('animate-pulse', 'text-emerald-600');
+        msgEl.classList.remove('text-rose-600');
+        
         const now = new Date();
-        const dateStr = `${now.getDate()}/${now.getMonth()+1}/${now.getFullYear()}`;
+        const dateStr = `${now.getDate()}/${now.getMonth()+1}/${now.getFullYear()} ${now.getHours()}:${now.getMinutes()}`;
 
-        fetch(GAS_API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams({
-                action: 'saveScore', user: currentUser, score: score, total: total, pct: pct, date: dateStr
-            })
+        // 1. Đóng gói toàn bộ dữ liệu thành chuỗi tham số URL (Query String)
+        const queryParams = new URLSearchParams({
+            action: 'saveScore', 
+            user: currentUser, 
+            score: score, 
+            total: total, 
+            pct: pct, 
+            date: dateStr
+        }).toString();
+
+        // 2. Gửi lệnh POST với tham số đính thẳng vào URL để tránh lỗi CORS
+        fetch(`${GAS_API_URL}?${queryParams}`, {
+            method: 'POST'
         })
         .then(res => res.json())
-        .then(() => {
-            msgEl.innerHTML = '<i class="fa-solid fa-check text-emerald-500"></i> Đã lưu kết quả lên Bảng Xếp Hạng!';
-            msgEl.classList.remove('animate-pulse');
-        }).catch(()=>{
+        .then(data => {
+            if (data.status === 'success') {
+                msgEl.innerHTML = '<i class="fa-solid fa-check text-emerald-500"></i> Đã lưu kết quả lên Bảng Xếp Hạng Quốc Gia!';
+                msgEl.classList.remove('animate-pulse');
+            } else {
+                msgEl.innerHTML = '<i class="fa-solid fa-xmark text-rose-500"></i> Lỗi máy chủ: ' + data.message;
+                msgEl.classList.remove('animate-pulse', 'text-emerald-600');
+                msgEl.classList.add('text-rose-600');
+            }
+        }).catch(err => {
             msgEl.innerHTML = '<i class="fa-solid fa-xmark text-rose-500"></i> Lỗi kết nối, chưa thể lưu điểm.';
             msgEl.classList.remove('animate-pulse', 'text-emerald-600');
             msgEl.classList.add('text-rose-600');
+            console.error(err);
         });
     }
 
