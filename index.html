@@ -71,7 +71,6 @@
 
   <!-- 1. MÀN HÌNH CHÍNH (DASHBOARD) -->
   <main id="home-dashboard" class="hidden flex-1 max-w-5xl w-full mx-auto p-4 md:p-8 flex flex-col justify-center">
-    <!-- Jumbotron -->
     <div class="bg-gradient-to-r from-[#0f4c81] to-[#1c6ca4] text-white rounded-2xl p-6 md:p-8 shadow-lg mb-6 relative overflow-hidden">
       <div class="relative z-10 max-w-2xl">
         <span class="inline-block bg-amber-400 text-[#0f4c81] text-xs font-bold uppercase px-2.5 py-1 rounded-md mb-3 tracking-wide">Quyết định số 22/QĐ-HĐYKQG</span>
@@ -79,8 +78,9 @@
         <p class="text-xs md:text-sm text-blue-100 leading-relaxed">
           Ngân hàng câu hỏi trắc nghiệm lâm sàng phân tầng theo 128 vấn đề cốt lõi. Mô phỏng phần mềm thi máy tính (CBT) chuẩn hóa của Hội đồng Y khoa Quốc gia.
         </p>
-        <div class="mt-4 flex items-center space-x-4 text-xs text-blue-200">
-          <span><i class="fa-solid fa-database mr-1.5"></i> Ngân hàng: <strong id="home-total-q" class="text-white font-bold">0</strong> câu hỏi</span>
+        <div class="mt-4 flex flex-wrap gap-4 text-xs text-blue-200">
+          <span class="bg-blue-800/50 px-3 py-1.5 rounded-lg"><i class="fa-solid fa-book-medical mr-1.5"></i> Luyện tập (Cơ bản): <strong id="count-basic" class="text-white font-bold">0</strong> câu</span>
+          <span class="bg-rose-800/50 px-3 py-1.5 rounded-lg"><i class="fa-solid fa-brain mr-1.5"></i> Thi thử (Vận dụng cao): <strong id="count-advanced" class="text-white font-bold">0</strong> câu</span>
         </div>
       </div>
       <div class="absolute -right-6 -bottom-8 text-blue-400/20 text-9xl pointer-events-none">
@@ -90,8 +90,6 @@
 
     <!-- KHỐI THỐNG KÊ LƯU LƯỢNG TRUY CẬP (ĐẾM THỰC TẾ) -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-      
-      <!-- 1. Đang truy cập -->
       <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-3.5">
         <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl font-bold relative shrink-0">
           <i class="fa-solid fa-users"></i>
@@ -103,8 +101,6 @@
           <div id="stat-online-users" class="text-xl font-extrabold text-slate-800 font-mono mt-0.5">--</div>
         </div>
       </div>
-
-      <!-- 2. Hôm nay -->
       <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-3.5">
         <div class="w-12 h-12 rounded-xl bg-blue-50 text-[#0f4c81] flex items-center justify-center text-xl font-bold shrink-0">
           <i class="fa-solid fa-calendar-day"></i>
@@ -114,8 +110,6 @@
           <div id="stat-today-visits" class="text-xl font-extrabold text-[#0f4c81] font-mono mt-0.5">--</div>
         </div>
       </div>
-
-      <!-- 3. Tổng lượt truy cập -->
       <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-3.5">
         <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl font-bold shrink-0">
           <i class="fa-solid fa-chart-line"></i>
@@ -125,18 +119,19 @@
           <div id="stat-total-visits" class="text-xl font-extrabold text-slate-800 font-mono mt-0.5">--</div>
         </div>
       </div>
-
     </div>
 
     <!-- Hai Phân Hệ -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      
+      <!-- Chế độ Luyện Tập (Bộ Cơ Bản) -->
       <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col justify-between hover:shadow-md transition">
         <div>
           <div class="w-12 h-12 bg-blue-50 text-[#0f4c81] rounded-xl flex items-center justify-center text-2xl font-bold mb-4">
-            <i class="fa-solid fa-graduation-cap"></i>
+            <i class="fa-solid fa-book-open-reader"></i>
           </div>
-          <h3 class="text-lg font-bold text-slate-900 mb-1">Chế Độ Luyện Tập Tự Do</h3>
-          <p class="text-xs text-slate-500 mb-4 leading-relaxed">Ôn tập không áp lực thời gian. Hiển thị đáp án và biện luận ngay sau mỗi câu.</p>
+          <h3 class="text-lg font-bold text-slate-900 mb-1">Bộ Luyện Tập (Mức Độ Cơ Bản)</h3>
+          <p class="text-xs text-slate-500 mb-4 leading-relaxed">Ôn tập không áp lực thời gian, hiển thị đáp án và biện luận chi tiết ngay sau mỗi câu.</p>
           <div class="space-y-3 mb-6">
             <label class="block text-xs font-bold text-slate-700">Chọn nhóm chuyên môn / hệ cơ quan:</label>
             <select id="home-topic-select" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-xs text-slate-800 font-medium outline-none"></select>
@@ -147,13 +142,15 @@
         </button>
       </div>
 
-      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col justify-between hover:shadow-md transition">
+      <!-- Chế độ Thi Thử (Bộ Vận Dụng Cao) -->
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col justify-between hover:shadow-md transition relative overflow-hidden">
+        <div class="absolute top-0 right-0 bg-rose-600 text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl shadow-sm">Khó (Bloom 3-6)</div>
         <div>
           <div class="w-12 h-12 bg-rose-50 text-rose-600 rounded-xl flex items-center justify-center text-2xl font-bold mb-4">
             <i class="fa-solid fa-stopwatch"></i>
           </div>
-          <h3 class="text-lg font-bold text-slate-900 mb-1">Mô Phỏng Thi Thử Quốc Gia</h3>
-          <p class="text-xs text-slate-500 mb-4 leading-relaxed">Khóa đáp án, trộn đề ngẫu nhiên, bấm giờ. Hệ thống tự động cập nhật kết quả lên Bảng Xếp Hạng Global nếu đã đăng nhập.</p>
+          <h3 class="text-lg font-bold text-slate-900 mb-1">Mô Phỏng Thi Thử (Vận Dụng Cao)</h3>
+          <p class="text-xs text-slate-500 mb-4 leading-relaxed">Hệ thống sẽ lấy toàn bộ câu hỏi mức độ Phân tích/Đánh giá để tạo đề. Khóa đáp án, trộn đề ngẫu nhiên, bấm giờ và lưu BXH.</p>
           <div class="space-y-4 mb-6">
             <div>
               <div class="flex justify-between items-center text-xs font-bold text-slate-700 mb-1.5">
@@ -319,12 +316,14 @@
 
   <script>
     // =========================================================================
-    // 1. LINK GOOGLE SHEETS CSV (ĐỂ LẤY CÂU HỎI)
+    // DÁN LINK CSV XUẤT TỪ SHEET "CƠ BẢN" (Luyện tập) VÀO ĐÂY:
     const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTZn-givAZO5QLXCt0UmSe25YTn477CbkQotFJ47ODyAq0YEmK8jTNbOxBGRmHBINuCI8rhbZZFejq-/pub?output=csv";
     
-    // 2. LINK GOOGLE APPS SCRIPT WEB APP (ĐỂ LÀM TÀI KHOẢN & LƯU ĐIỂM)
-    // Dán URL Web App bạn lấy ở Bước 1 vào đây:
-    const GAS_API_URL = "https://script.google.com/macros/s/AKfycbzB_qMY5R81I04Cw8CqhR7JZ4CFxfMrJnU5DiAmQmx9wicpOy_rZWIMWRSVs0HRjngeRg/exec";
+    // DÁN LINK CSV XUẤT TỪ SHEET "VẬN DỤNG CAO" (Thi thử) VÀO ĐÂY:
+    const ADVANCED_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTZn-givAZO5QLXCt0UmSe25YTn477CbkQotFJ47ODyAq0YEmK8jTNbOxBGRmHBINuCI8rhbZZFejq-/pub?output=csv"; 
+
+    // DÁN URL GOOGLE APPS SCRIPT WEB APP (Làm Tài khoản & BXH) VÀO ĐÂY:
+    const GAS_API_URL = "https://script.google.com/macros/s/AKfycbyvSgXf_BOMK1qSCAJt5E_LdO018knt2lH4m_37yV1l63aO5sYfK0J-vXlI20sL3H1x/exec";
     // =========================================================================
 
     const OFFICIAL_TOPICS = [
@@ -339,7 +338,9 @@
       { name: "Khoa học xã hội trong y học & Y đức (Vấn đề 125 - 128)" }, { name: "ALL - Trộn toàn bộ ngân hàng đề" }
     ];
 
-    let allQuestions = [], activeQuestions = [], currentIdx = 0, userAnswers = {}, flaggedSet = new Set(), currentMode = 'home', timerInterval = null, timeRemaining = 0;
+    let allQuestions = [], basicQuestions = [], advancedQuestions = [];
+    let activeQuestions = [], currentIdx = 0, userAnswers = {}, flaggedSet = new Set();
+    let currentMode = 'home', timerInterval = null, timeRemaining = 0;
     
     // Auth State
     let currentUser = localStorage.getItem('medpass_current_user') || null;
@@ -387,18 +388,9 @@
         btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i>';
         btn.disabled = true;
 
-        // Bỏ các Headers phức tạp để tránh lỗi CORS
-        // Gửi data dưới dạng tham số URL
-        const queryParams = new URLSearchParams({
-            action: authMode, 
-            user: user, 
-            pass: pass
-        }).toString();
+        const queryParams = new URLSearchParams({ action: authMode, user: user, pass: pass }).toString();
 
-        fetch(`${GAS_API_URL}?${queryParams}`, {
-            method: 'POST'
-            // Chú ý: Không thêm mode: 'no-cors' vì nó sẽ làm mất dữ liệu phản hồi (JSON)
-        })
+        fetch(`${GAS_API_URL}?${queryParams}`, { method: 'POST' })
         .then(res => res.json())
         .then(data => {
             btn.disabled = false;
@@ -417,7 +409,6 @@
             btn.innerHTML = authMode === 'login' ? '<span>ĐĂNG NHẬP</span>' : '<span>TẠO TÀI KHOẢN</span>';
             errEl.innerText = "Lỗi CORS hoặc không thể kết nối Google Apps Script!";
             errEl.classList.remove('hidden');
-            console.error(err);
         });
     }
 
@@ -460,7 +451,7 @@
         });
     }
 
- function renderLeaderboard(records) {
+    function renderLeaderboard(records) {
         const tbody = document.getElementById('leaderboard-body');
         tbody.innerHTML = records.map((r, i) => {
             let rankBadge = i + 1;
@@ -468,51 +459,41 @@
             if(i === 1) rankBadge = '<i class="fa-solid fa-medal text-slate-400 text-lg"></i>';
             if(i === 2) rankBadge = '<i class="fa-solid fa-medal text-amber-700 text-lg"></i>';
             
+            // Format ngày giờ Việt Nam
+            const formattedDate = new Date(r.date).toLocaleString('vi-VN', {hour: '2-digit', minute:'2-digit', day: '2-digit', month: '2-digit', year: 'numeric'});
+
             return `
             <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
                 <td class="p-3 font-bold text-center text-slate-500">${rankBadge}</td>
                 <td class="p-3 font-bold text-[#0f4c81]">${r.user}</td>
                 <td class="p-3 text-center">${r.score} / ${r.total}</td>
                 <td class="p-3 text-center font-bold ${r.pct >= 70 ? 'text-emerald-600' : 'text-rose-600'}">${r.pct}%</td>
-                
-                <!-- DÒNG CẦN SỬA LÀ DÒNG BÊN DƯỚI -->
-               <td class="p-3 text-right text-xs text-slate-500">${new Date(r.date).toLocaleString('vi-VN', {hour: '2-digit', minute:'2-digit', day: '2-digit', month: '2-digit', year: 'numeric'})}</td>
+                <td class="p-3 text-right text-xs text-slate-500">${formattedDate}</td>
             </tr>
         `}).join('');
     }
 
     function saveScore(score, total, pct) {
-        if (!currentUser) return; // Chỉ lưu nếu đã đăng nhập
+        if (!currentUser) return; 
 
         const msgEl = document.getElementById('score-saving-msg');
         msgEl.classList.remove('hidden');
-        
-        // Trả lại trạng thái loading ban đầu (nếu người dùng thi nhiều lần)
         msgEl.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Đang lưu điểm lên Bảng xếp hạng...';
         msgEl.classList.add('animate-pulse', 'text-emerald-600');
         msgEl.classList.remove('text-rose-600');
         
         const now = new Date();
-        const dateStr = `${now.getDate()}/${now.getMonth()+1}/${now.getFullYear()} ${now.getHours()}:${now.getMinutes()}`;
+        const dateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}T${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
 
-        // 1. Đóng gói toàn bộ dữ liệu thành chuỗi tham số URL (Query String)
         const queryParams = new URLSearchParams({
-            action: 'saveScore', 
-            user: currentUser, 
-            score: score, 
-            total: total, 
-            pct: pct, 
-            date: dateStr
+            action: 'saveScore', user: currentUser, score: score, total: total, pct: pct, date: dateStr
         }).toString();
 
-        // 2. Gửi lệnh POST với tham số đính thẳng vào URL để tránh lỗi CORS
-        fetch(`${GAS_API_URL}?${queryParams}`, {
-            method: 'POST'
-        })
+        fetch(`${GAS_API_URL}?${queryParams}`, { method: 'POST' })
         .then(res => res.json())
         .then(data => {
             if (data.status === 'success') {
-                msgEl.innerHTML = '<i class="fa-solid fa-check text-emerald-500"></i> Đã lưu kết quả lên Bảng Xếp Hạng!';
+                msgEl.innerHTML = '<i class="fa-solid fa-check text-emerald-500"></i> Đã lưu kết quả lên Bảng Xếp Hạng Quốc Gia!';
                 msgEl.classList.remove('animate-pulse');
             } else {
                 msgEl.innerHTML = '<i class="fa-solid fa-xmark text-rose-500"></i> Lỗi máy chủ: ' + data.message;
@@ -523,7 +504,6 @@
             msgEl.innerHTML = '<i class="fa-solid fa-xmark text-rose-500"></i> Lỗi kết nối, chưa thể lưu điểm.';
             msgEl.classList.remove('animate-pulse', 'text-emerald-600');
             msgEl.classList.add('text-rose-600');
-            console.error(err);
         });
     }
 
@@ -556,12 +536,44 @@
           const validRows = results.data.filter(q => q.content && q.optA);
           if (validRows.length > 0) {
             allQuestions = validRows;
-            document.getElementById('home-total-q').innerText = allQuestions.length;
-            document.getElementById('loading').classList.add('hidden');
-            goToHome();
+            
+            // Gán dữ liệu Sheet Cơ bản
+            basicQuestions = allQuestions; 
+            document.getElementById('count-basic').innerText = basicQuestions.length;
+            
+            // Gọi hàm tải Sheet Vận Dụng Cao
+            loadAdvancedQuestions();
           }
         }
       });
+    }
+
+    // Hàm tải Sheet Vận Dụng Cao (Thi Thử)
+    function loadAdvancedQuestions() {
+        if (!ADVANCED_SHEET_CSV_URL || ADVANCED_SHEET_CSV_URL === "LINK_CSV_CUA_TRANG_TINH_VAN_DUNG_CAO") {
+            // Fallback nếu chưa cấu hình link
+            advancedQuestions = [...basicQuestions];
+            document.getElementById('count-advanced').innerText = "0 (Chưa đồng bộ)";
+            document.getElementById('loading').classList.add('hidden');
+            goToHome();
+            return;
+        }
+
+        Papa.parse(ADVANCED_SHEET_CSV_URL, {
+            download: true, header: true, skipEmptyLines: true,
+            complete: function(results) {
+                const validRows = results.data.filter(q => q.content && q.optA);
+                advancedQuestions = validRows;
+                document.getElementById('count-advanced').innerText = advancedQuestions.length;
+                document.getElementById('loading').classList.add('hidden');
+                goToHome();
+            },
+            error: function() {
+                console.error("Lỗi khi tải bộ đề thi thử.");
+                document.getElementById('loading').classList.add('hidden');
+                goToHome();
+            }
+        });
     }
 
     function buildTopicDropdowns() {
@@ -601,28 +613,33 @@
       return arr;
     }
 
+    // CHẾ ĐỘ LUYỆN TẬP -> SỬ DỤNG BỘ CÂU HỎI CƠ BẢN
     function startPracticeMode() {
       currentMode = 'practice';
       const selected = document.getElementById('home-topic-select').value;
-      if (selected === "ALL") activeQuestions = [...allQuestions];
+      if (selected === "ALL") activeQuestions = [...basicQuestions];
       else {
         const target = selected.toLowerCase().split('(')[0].trim();
-        activeQuestions = allQuestions.filter(q => (q.specialty||"").toLowerCase().includes(target) || (q.content||"").toLowerCase().includes(target));
+        activeQuestions = basicQuestions.filter(q => (q.specialty||"").toLowerCase().includes(target) || (q.content||"").toLowerCase().includes(target));
       }
 
-      if (activeQuestions.length === 0) activeQuestions = [...allQuestions];
+      if (activeQuestions.length === 0) activeQuestions = [...basicQuestions];
       resetExamState();
       document.getElementById('submit-btn').innerText = "Kết thúc luyện tập";
       displayQuestion(0);
     }
 
+    // CHẾ ĐỘ THI THỬ -> SỬ DỤNG BỘ CÂU HỎI VẬN DỤNG CAO
     function startExamMode() {
       if (!currentUser) {
           alert("Lưu ý: Bạn đang thi ở chế độ Khách. Kết quả sẽ KHÔNG được lưu vào Bảng xếp hạng. Vui lòng đăng nhập ở màn hình chính!");
       }
       currentMode = 'exam';
       const minutes = parseInt(document.getElementById('home-time-slider').value, 10);
-      activeQuestions = shuffleArray(allQuestions);
+      
+      activeQuestions = shuffleArray(advancedQuestions);
+      if(activeQuestions.length === 0) activeQuestions = shuffleArray(basicQuestions); // Fallback nếu chưa có câu hỏi khó
+
       resetExamState();
       document.getElementById('submit-btn').innerText = "Nộp bài kiểm tra";
       document.getElementById('score-saving-msg').classList.add('hidden');
@@ -745,7 +762,8 @@
       const bd = {};
       activeQuestions.forEach((q, i) => {
         const cIdx = parseInt(q.correct, 10) - 1;
-        const sp = q.specialty || "Khác";
+        let sp = q.specialty ? q.specialty.split('(')[0].trim() : "Khác"; 
+        
         if (!bd[sp]) bd[sp] = { c: 0, t: 0 };
         bd[sp].t++;
         if (userAnswers[i] === cIdx) { correct++; bd[sp].c++; }
