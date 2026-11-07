@@ -1023,11 +1023,8 @@ db.ref('online_sessions').on('value', (snapshot) => {
 
     window.onload = initApp;
   </script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-</body>
-</html>
-document.addEventListener("DOMContentLoaded", () => {
+  <script>
+  document.addEventListener("DOMContentLoaded", () => {
   // 1. Cập nhật hiển thị số liệu thanh trượt (Range Slider)
   const sliderTime = document.getElementById('slider-time');
   const valTime = document.getElementById('val-time');
@@ -1098,3 +1095,10 @@ document.addEventListener("DOMContentLoaded", () => {
     // generateCustomExam(timeLimit, questionLimit, useBasic, useAdvanced, selectedTopics);
   });
 });
+  </script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  
+</body>
+</html>
+
