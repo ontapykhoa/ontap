@@ -200,28 +200,13 @@
               <label class="text-sm font-semibold text-slate-600">Số lượng câu hỏi</label>
               <span class="text-xl font-bold text-[#0f4c81]"><span id="val-questions">90</span> <span class="text-sm font-normal text-slate-500">câu</span></span>
             </div>
-            <input type="range" id="slider-questions" min="10" max="120" step="5" value="90" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#0f4c81]">
+            <input type="range" id="slider-questions" min="10" max="150" step="5" value="90" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#0f4c81]">
             <div class="flex justify-between text-xs text-slate-400 mt-2">
-              <span>10</span><span>120</span>
+              <span>10</span><span>150</span>
             </div>
           </div>
 
-          <!-- Nguồn dữ liệu -->
-          <div>
-            <label class="text-sm font-semibold text-slate-600 mb-3 block">Nguồn dữ liệu (Độ khó)</label>
-            <div class="flex flex-col gap-3">
-              <label class="flex items-center gap-3 p-3 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-50 transition">
-                <input type="checkbox" id="chk-basic" checked class="w-5 h-5 text-[#0f4c81] rounded focus:ring-blue-500 accent-[#0f4c81]">
-                <span class="text-sm text-slate-700 font-medium">Luyện tập cơ bản (Mức 1-3)</span>
-              </label>
-              <label class="flex items-center gap-3 p-3 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-50 transition">
-                <input type="checkbox" id="chk-advanced" checked class="w-5 h-5 text-[#0f4c81] rounded focus:ring-blue-500 accent-[#0f4c81]">
-                <span class="text-sm text-slate-700 font-medium">Vận dụng cao / Tình huống (Mức 4-5)</span>
-              </label>
-            </div>
-          </div>
-        </div>
-
+    
         <!-- Nút Bắt Đầu Thi -->
         <button id="btn-generate-exam" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold text-lg py-4 rounded-xl shadow-lg transition-all transform hover:-translate-y-1 flex justify-center items-center gap-2 uppercase tracking-wider">
           <i class="fa-solid fa-play mr-2"></i> BẮT ĐẦU THI
@@ -232,7 +217,7 @@
       <main class="w-full lg:w-2/3 bg-white p-6 rounded-xl shadow-sm border border-slate-200">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-            <i class="fas fa-layer-group text-[#0f4c81]"></i> Phạm vi kiến thức (17 Hệ thống)
+            <i class="fas fa-layer-group text-[#0f4c81]"></i> Phạm vi kiến thức 
           </h3>
           <button id="btn-toggle-all" class="text-sm font-semibold text-[#0f4c81] hover:text-blue-800 bg-blue-50 px-3 py-1.5 rounded-md border border-blue-200">
             Bỏ chọn tất cả
