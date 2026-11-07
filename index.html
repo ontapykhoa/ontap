@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -19,6 +20,11 @@
     @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     .modal-backdrop { animation: fadeIn 0.2s ease-out; }
     .modal-content { animation: slideUp 0.3s ease-out; }
+
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
   </style>
 </head>
 <body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col select-none">
@@ -149,22 +155,99 @@
           </div>
           <h3 class="text-lg font-bold text-slate-900 mb-1">Mô Phỏng Thi Thử</h3>
           <p class="text-xs text-slate-500 mb-4 leading-relaxed">Hệ thống sẽ khóa đáp án, trộn đề ngẫu nhiên, bấm giờ và lưu BXH.</p>
-          <div class="space-y-4 mb-6">
-            <div>
-              <div class="flex justify-between items-center text-xs font-bold text-slate-700 mb-1.5">
-                <span>Thời gian làm bài:</span>
-                <span id="home-timer-display" class="text-rose-600 font-mono font-bold text-sm bg-rose-50 px-2 py-0.5 rounded border border-rose-200">60 phút</span>
-              </div>
-              <input type="range" id="home-time-slider" min="15" max="180" step="5" value="60" oninput="document.getElementById('home-timer-display').innerText = this.value + ' phút'" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-rose-600">
-            </div>
-          </div>
         </div>
-        <button onclick="startExamMode()" class="w-full py-3 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold uppercase tracking-wider shadow transition flex items-center justify-center">
-          <i class="fa-solid fa-pencil mr-2"></i> Vào phòng thi thử
+        <button onclick="document.getElementById('exam-builder-view').scrollIntoView({behavior: 'smooth'})" class="w-full py-3 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold uppercase tracking-wider shadow transition flex items-center justify-center">
+          <i class="fa-solid fa-cog mr-2"></i> Thiết Lập Bài Thi Thử
         </button>
       </div>
     </div>
   </main>
+
+  <!-- BẮT ĐẦU: GIAO DIỆN THIẾT LẬP ĐỀ THI ĐỘNG -->
+  <div id="exam-builder-view" class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 bg-slate-50 font-sans mt-12 rounded-xl shadow-sm border border-slate-200 mb-16 hidden">
+    <div class="mb-8">
+      <h2 class="text-3xl font-bold text-slate-800">Thiết Lập Bài Thi ĐGNL</h2>
+      <p class="text-slate-500 mt-2">Tùy chỉnh thời lượng, số lượng câu hỏi và chuyên khoa muốn tập trung ôn luyện.</p>
+    </div>
+
+    <div class="flex flex-col lg:flex-row gap-6">
+      <!-- CỘT TRÁI: BẢNG ĐIỀU KHIỂN CÀI ĐẶT -->
+      <aside class="w-full lg:w-1/3 flex flex-col gap-6">
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+          <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
+            <i class="fas fa-sliders-h text-[#0f4c81]"></i> Cấu hình đề thi
+          </h3>
+          
+          <!-- Chọn thời gian -->
+          <div class="mb-6">
+            <div class="flex justify-between items-end mb-2">
+              <label class="text-sm font-semibold text-slate-600">Thời gian làm bài</label>
+              <span class="text-xl font-bold text-[#0f4c81]"><span id="val-time">60</span> <span class="text-sm font-normal text-slate-500">phút</span></span>
+            </div>
+            <input type="range" id="slider-time" min="15" max="180" step="5" value="60" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#0f4c81]">
+            <div class="flex justify-between text-xs text-slate-400 mt-2">
+              <span>15p</span><span>180p</span>
+            </div>
+          </div>
+
+          <!-- Chọn số lượng câu hỏi -->
+          <div class="mb-6">
+            <div class="flex justify-between items-end mb-2">
+              <label class="text-sm font-semibold text-slate-600">Số lượng câu hỏi</label>
+              <span class="text-xl font-bold text-[#0f4c81]"><span id="val-questions">90</span> <span class="text-sm font-normal text-slate-500">câu</span></span>
+            </div>
+            <input type="range" id="slider-questions" min="10" max="120" step="5" value="90" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#0f4c81]">
+            <div class="flex justify-between text-xs text-slate-400 mt-2">
+              <span>10</span><span>120</span>
+            </div>
+          </div>
+
+          <!-- Nguồn dữ liệu -->
+          <div>
+            <label class="text-sm font-semibold text-slate-600 mb-3 block">Nguồn dữ liệu (Độ khó)</label>
+            <div class="flex flex-col gap-3">
+              <label class="flex items-center gap-3 p-3 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-50 transition">
+                <input type="checkbox" id="chk-basic" checked class="w-5 h-5 text-[#0f4c81] rounded focus:ring-blue-500 accent-[#0f4c81]">
+                <span class="text-sm text-slate-700 font-medium">Luyện tập cơ bản (Mức 1-3)</span>
+              </label>
+              <label class="flex items-center gap-3 p-3 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-50 transition">
+                <input type="checkbox" id="chk-advanced" checked class="w-5 h-5 text-[#0f4c81] rounded focus:ring-blue-500 accent-[#0f4c81]">
+                <span class="text-sm text-slate-700 font-medium">Vận dụng cao / Tình huống (Mức 4-5)</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Nút Bắt Đầu Thi -->
+        <button id="btn-generate-exam" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold text-lg py-4 rounded-xl shadow-lg transition-all transform hover:-translate-y-1 flex justify-center items-center gap-2 uppercase tracking-wider">
+          <i class="fa-solid fa-play mr-2"></i> BẮT ĐẦU THI
+        </button>
+      </aside>
+
+      <!-- CỘT PHẢI: LỰA CHỌN CHUYÊN KHOA VÀ VẤN ĐỀ -->
+      <main class="w-full lg:w-2/3 bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+          <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+            <i class="fas fa-layer-group text-[#0f4c81]"></i> Phạm vi kiến thức (17 Hệ thống)
+          </h3>
+          <button id="btn-toggle-all" class="text-sm font-semibold text-[#0f4c81] hover:text-blue-800 bg-blue-50 px-3 py-1.5 rounded-md">
+            Bỏ chọn tất cả
+          </button>
+        </div>
+
+        <!-- Khung tìm kiếm -->
+        <div class="relative mb-6">
+          <input type="text" id="search-topic" placeholder="Tìm kiếm hệ cơ quan hoặc vấn đề (VD: Tim mạch, Vàng da...)" class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+          <i class="fas fa-search text-slate-400 absolute left-4 top-3.5 text-lg"></i>
+        </div>
+
+        <!-- Lưới Chủ đề (Được render tự động bằng JS) -->
+        <div id="topics-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4 h-[calc(100vh-320px)] min-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+        </div>
+      </main>
+    </div>
+  </div>
+  <!-- KẾT THÚC: GIAO DIỆN THIẾT LẬP ĐỀ THI ĐỘNG -->
 
   
   <!-- 2. GIAO DIỆN PHÒNG THI -->
@@ -629,6 +712,9 @@ db.ref('online_sessions').on('value', (snapshot) => {
         document.getElementById('result-view').classList.add('hidden');
         document.getElementById('leaderboard-view').classList.add('hidden');
         document.getElementById('timer-box').classList.add('hidden');
+        
+        const builderView = document.getElementById('exam-builder-view');
+        if(builderView) builderView.classList.add('hidden');
     }
 
     function goToHome() {
@@ -639,6 +725,9 @@ db.ref('online_sessions').on('value', (snapshot) => {
       currentMode = 'home';
       hideAllViews();
       document.getElementById('home-dashboard').classList.remove('hidden');
+      
+      const builderView = document.getElementById('exam-builder-view');
+      if(builderView) builderView.classList.remove('hidden');
     }
 
         // Hàm xáo trộn thông minh: Giữ nguyên các câu hỏi chuỗi (Grouped Shuffle)
@@ -692,35 +781,6 @@ db.ref('online_sessions').on('value', (snapshot) => {
       if (activeQuestions.length === 0) activeQuestions = [...basicQuestions];
       resetExamState();
       document.getElementById('submit-btn').innerText = "Kết thúc luyện tập";
-      displayQuestion(0);
-    }
-
-    // CHẾ ĐỘ THI THỬ -> SỬ DỤNG BỘ CÂU HỎI VẬN DỤNG CAO
-    function startExamMode() {
-      if (!currentUser) {
-          alert("Lưu ý: Bạn đang thi ở chế độ Khách. Kết quả sẽ KHÔNG được lưu vào Bảng xếp hạng. Vui lòng đăng nhập ở màn hình chính!");
-      }
-      currentMode = 'exam';
-      const minutes = parseInt(document.getElementById('home-time-slider').value, 10);
-      
-            activeQuestions = shuffleQuestions(advancedQuestions);
-      if(activeQuestions.length === 0) activeQuestions = shuffleQuestions(basicQuestions); // Fallback nếu chưa có câu hỏi khó
-
-
-      resetExamState();
-      document.getElementById('submit-btn').innerText = "Nộp bài kiểm tra";
-      document.getElementById('score-saving-msg').classList.add('hidden');
-
-      timeRemaining = minutes * 60;
-      document.getElementById('timer-box').classList.remove('hidden');
-      updateTimerDisplay();
-
-      timerInterval = setInterval(() => {
-        timeRemaining--;
-        updateTimerDisplay();
-        if (timeRemaining <= 0) { clearInterval(timerInterval); alert("Hết giờ!"); submitExam(); }
-      }, 1000);
-
       displayQuestion(0);
     }
 
@@ -873,11 +933,10 @@ db.ref('online_sessions').on('value', (snapshot) => {
 
     window.onload = initApp;
   </script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  // 1. Cập nhật hiển thị số liệu thanh trượt
   const sliderTime = document.getElementById('slider-time');
   const valTime = document.getElementById('val-time');
   const sliderQuestions = document.getElementById('slider-questions');
@@ -886,14 +945,12 @@ document.addEventListener("DOMContentLoaded", () => {
   if(sliderTime) sliderTime.addEventListener('input', (e) => valTime.textContent = e.target.value);
   if(sliderQuestions) sliderQuestions.addEventListener('input', (e) => valQuestions.textContent = e.target.value);
 
-  // 2. Render 17 Hệ thống và 128 Vấn đề từ biến OFFICIAL_TOPICS
   const topicsGrid = document.getElementById('topics-grid');
   if(topicsGrid && typeof OFFICIAL_TOPICS !== 'undefined') {
     let html = '';
     OFFICIAL_TOPICS.forEach((topicGroup) => {
-      if(topicGroup.name === "ALL - Trộn toàn bộ ngân hàng đề") return; // Bỏ qua mục ALL
+      if(topicGroup.name === "Toàn bộ ngân hàng đề") return;
       
-      // Bóc tách tên nhóm và khoảng vấn đề
       let groupName = topicGroup.name;
       let issues = [];
       let match = groupName.match(/(.+?)\s*\(Vấn đề (\d+) - (\d+)\)/);
@@ -906,23 +963,21 @@ document.addEventListener("DOMContentLoaded", () => {
           issues.push(`Vấn đề ${i}`);
         }
       } else {
-        issues.push(groupName); // Dự phòng nếu format không khớp
+        issues.push(groupName);
       }
 
-      // Tạo chuỗi HTML các ô checkbox nhỏ
       let issuesHtml = issues.map(issue => `
         <label class="flex items-start gap-2 cursor-pointer group">
-          <input type="checkbox" value="${groupName} (${issue})" class="chk-topic mt-1 w-4 h-4 text-blue-600 rounded accent-blue-600" checked>
-          <span class="text-sm text-slate-600 group-hover:text-blue-600">${issue}</span>
+          <input type="checkbox" value="${groupName} (${issue})" class="chk-topic mt-1 w-4 h-4 text-[#0f4c81] rounded accent-[#0f4c81]" checked>
+          <span class="text-sm text-slate-600 group-hover:text-[#0f4c81]">${issue}</span>
         </label>
       `).join('');
 
-      // Tạo chuỗi HTML Panel nhóm lớn
       html += `
         <div class="topic-group border border-slate-200 rounded-lg overflow-hidden" data-group-name="${groupName.toLowerCase()}">
           <div class="bg-slate-50 px-4 py-3 flex items-center justify-between border-b border-slate-200">
             <label class="flex items-center gap-3 font-semibold text-slate-700 cursor-pointer">
-              <input type="checkbox" class="chk-group w-4 h-4 text-blue-600 rounded accent-blue-600" checked>
+              <input type="checkbox" class="chk-group w-4 h-4 text-[#0f4c81] rounded accent-[#0f4c81]" checked>
               ${groupName}
             </label>
             <span class="text-xs font-bold text-slate-400 bg-white px-2 py-1 rounded-full border border-slate-200">${issues.length} Vấn đề</span>
@@ -936,7 +991,6 @@ document.addEventListener("DOMContentLoaded", () => {
     topicsGrid.innerHTML = html;
   }
 
-  // 3. Logic "Chọn/Bỏ chọn" Tất cả Chủ đề
   const btnToggleAll = document.getElementById('btn-toggle-all');
   let isAllChecked = true;
 
@@ -949,7 +1003,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 4. Liên kết Checkbox Nhóm (Group) và Vấn đề con (Topic)
   document.querySelectorAll('.chk-group').forEach(groupChk => {
     groupChk.addEventListener('change', (e) => {
       const parentContainer = e.target.closest('.topic-group');
@@ -970,7 +1023,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // 5. Tính năng Tìm kiếm Vấn đề nhanh
   const searchInput = document.getElementById('search-topic');
   if(searchInput) {
     searchInput.addEventListener('input', (e) => {
@@ -993,19 +1045,20 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 6. XỬ LÝ KHỞI TẠO BÀI THI KHI NHẤN "BẮT ĐẦU THI"
   const btnGenerateExam = document.getElementById('btn-generate-exam');
   if(btnGenerateExam) {
     btnGenerateExam.addEventListener('click', () => {
+      if (!currentUser) {
+          alert("Lưu ý: Bạn đang thi ở chế độ Khách. Kết quả sẽ KHÔNG được lưu vào Bảng xếp hạng. Vui lòng đăng nhập ở màn hình chính!");
+      }
+
       const timeLimit = parseInt(sliderTime.value);
       const questionLimit = parseInt(sliderQuestions.value);
       const useBasic = document.getElementById('chk-basic').checked;
       const useAdvanced = document.getElementById('chk-advanced').checked;
 
-      // Trích xuất các chuyên khoa đã được chọn
       const selectedTopics = [];
       document.querySelectorAll('.chk-topic:checked').forEach(chk => {
-        // Tách lấy Tên Hệ Thống (ví dụ: "Hệ tiêu hóa") từ giá trị checkbox "Hệ tiêu hóa (Vấn đề 49)"
         let systemName = chk.value.split(' (')[0]; 
         if(!selectedTopics.includes(systemName)) {
             selectedTopics.push(systemName);
@@ -1021,7 +1074,6 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      // Xây dựng kho dữ liệu dựa vào Độ khó (Mức 1-3 hoặc Mức 4-5)
       let sourceQuestions = [];
       if(useBasic && typeof basicQuestions !== 'undefined') {
           sourceQuestions = sourceQuestions.concat(basicQuestions);
@@ -1030,10 +1082,9 @@ document.addEventListener("DOMContentLoaded", () => {
           sourceQuestions = sourceQuestions.concat(advancedQuestions);
       }
       
-      // Lọc câu hỏi chỉ thuộc về các Chuyên khoa đã được chọn
       let filteredQuestions = sourceQuestions.filter(q => {
          if(!q.specialty) return false;
-         let qSys = q.specialty.split(' (')[0]; // Chuẩn hóa tên hệ thống trong file CSV
+         let qSys = q.specialty.split(' (')[0];
          return selectedTopics.includes(qSys);
       });
       
@@ -1042,36 +1093,33 @@ document.addEventListener("DOMContentLoaded", () => {
           return;
       }
 
-      // Trộn thông minh (để giữ nguyên Chuỗi lâm sàng) và Cắt theo số lượng yêu cầu
       activeQuestions = shuffleQuestions(filteredQuestions).slice(0, questionLimit);
       
-      // ----- CHUYỂN GIAO DIỆN VÀO PHÒNG THI -----
-      EXAM_TIME_MINUTES = timeLimit;
-      examMode = true; // Bật cờ thi thử (Khóa giải thích, khóa đáp án)
+      currentMode = 'exam';
+      timeRemaining = timeLimit * 60;
       
-      document.getElementById('home-screen').classList.add('hidden');
-      document.getElementById('exam-screen').classList.remove('hidden');
+      hideAllViews();
+      document.getElementById('exam-container').classList.remove('hidden');
+      document.getElementById('timer-box').classList.remove('hidden');
+      document.getElementById('submit-btn').innerText = "Nộp bài kiểm tra";
+      document.getElementById('score-saving-msg').classList.add('hidden');
       
-      // Cập nhật Header
-      const indicator = document.getElementById('mode-indicator');
-      if(indicator) {
-          indicator.innerText = "ĐANG THI THỬ";
-          indicator.classList.remove('bg-blue-100', 'text-blue-800');
-          indicator.classList.add('bg-red-100', 'text-red-800');
-      }
+      currentIdx = 0;
+      userAnswers = {};
+      flaggedSet.clear();
       
-      // Reset số liệu thi
-      currentQuestionIndex = 0;
-      userAnswers = new Array(activeQuestions.length).fill(null);
-      flaggedQuestions = new Array(activeQuestions.length).fill(false);
-      isTestSubmitted = false;
+      updateTimerDisplay();
+      timerInterval = setInterval(() => {
+        timeRemaining--;
+        updateTimerDisplay();
+        if (timeRemaining <= 0) { clearInterval(timerInterval); alert("Hết giờ!"); submitExam(); }
+      }, 1000);
       
-      startTimer();
-      renderQuestionMatrix();
-      displayQuestion(currentQuestionIndex);
+      displayQuestion(currentIdx);
     });
   }
 });
+
 </script>
 </body>
 </html>
