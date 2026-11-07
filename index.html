@@ -640,14 +640,43 @@ db.ref('online_sessions').on('value', (snapshot) => {
       document.getElementById('home-dashboard').classList.remove('hidden');
     }
 
-    function shuffleArray(array) {
-      const arr = [...array];
-      for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
+        // Hàm xáo trộn thông minh: Giữ nguyên các câu hỏi chuỗi (Grouped Shuffle)
+    function shuffleQuestions(questions) {
+      let grouped = [];
+      let i = 0;
+      while (i < questions.length) {
+        let q = questions[i];
+        let match = (q.content || "").match(/\[Chuoi(\d+)\]/i);
+        if (match) {
+          let chainLength = parseInt(match[1], 10);
+          let chain = [];
+          // Gom đủ số câu của chuỗi vào một nhóm
+          for (let j = 0; j < chainLength && (i + j) < questions.length; j++) {
+            chain.push(questions[i + j]);
+          }
+          grouped.push(chain);
+          i += chainLength;
+        } else {
+          // Câu hỏi đơn lẻ
+          grouped.push([q]);
+          i++;
+        }
       }
-      return arr;
+
+      // Xáo trộn các nhóm (Fisher-Yates)
+      for (let idx = grouped.length - 1; idx > 0; idx--) {
+        const jdx = Math.floor(Math.random() * (idx + 1));
+        [grouped[idx], grouped[jdx]] = [grouped[jdx], grouped[idx]];
+      }
+
+      // Trải phẳng mảng trở lại
+      let result = [];
+      grouped.forEach(group => {
+        result.push(...group);
+      });
+      return result;
     }
+
 
     // CHẾ ĐỘ LUYỆN TẬP -> SỬ DỤNG BỘ CÂU HỎI CƠ BẢN
     function startPracticeMode() {
@@ -673,8 +702,9 @@ db.ref('online_sessions').on('value', (snapshot) => {
       currentMode = 'exam';
       const minutes = parseInt(document.getElementById('home-time-slider').value, 10);
       
-      activeQuestions = shuffleArray(advancedQuestions);
-      if(activeQuestions.length === 0) activeQuestions = shuffleArray(basicQuestions); // Fallback nếu chưa có câu hỏi khó
+            activeQuestions = shuffleQuestions(advancedQuestions);
+      if(activeQuestions.length === 0) activeQuestions = shuffleQuestions(basicQuestions); // Fallback nếu chưa có câu hỏi khó
+
 
       resetExamState();
       document.getElementById('submit-btn').innerText = "Nộp bài kiểm tra";
@@ -713,10 +743,15 @@ db.ref('online_sessions').on('value', (snapshot) => {
       document.getElementById('q-index-label').innerText = `Câu số ${idx + 1}:`;
       document.getElementById('q-specialty-badge').innerText = q.specialty || "Lâm sàng";
 
-      let text = q.content, img = null;
+            let text = q.content, img = null;
       const tM = text.match(/\[img:\s*(https?:\/\/[^\s\]]+)\s*\]/i);
       if (tM) { img = tM[1]; text = text.replace(tM[0], ''); }
+      
+      // Ẩn mã [Chuoi...] khỏi màn hình hiển thị
+      text = text.replace(/\[Chuoi\d+\]\\n/gi, '').replace(/\[Chuoi\d+\]/gi, ''); 
+      
       text = text.replaceAll(/\\n/g, '<br>').replaceAll('<br><br>', '<br>').trim();
+
       document.getElementById('content-display').innerHTML = text;
 
       const imgBox = document.getElementById('image-box');
