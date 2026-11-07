@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -156,6 +155,7 @@
           <h3 class="text-lg font-bold text-slate-900 mb-1">Mô Phỏng Thi Thử</h3>
           <p class="text-xs text-slate-500 mb-4 leading-relaxed">Hệ thống sẽ khóa đáp án, trộn đề ngẫu nhiên, bấm giờ và lưu BXH.</p>
         </div>
+        <button onclick="showExamBuilder()" class="w-full py-3 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold uppercase tracking-wider shadow transition flex items-center justify-center">
           <i class="fa-solid fa-cog mr-2"></i> Thiết Lập Bài Thi Thử
         </button>
       </div>
@@ -163,8 +163,15 @@
   </main>
 
   <!-- BẮT ĐẦU: GIAO DIỆN THIẾT LẬP ĐỀ THI ĐỘNG -->
-      <h2 class="text-3xl font-bold text-slate-800">Thiết Lập Bài Thi ĐGNL</h2>
-      <p class="text-slate-500 mt-2">Tùy chỉnh thời lượng, số lượng câu hỏi và chuyên khoa muốn tập trung ôn luyện.</p>
+  <div id="exam-builder-view" class="hidden flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 bg-slate-50 font-sans rounded-xl shadow-sm border border-slate-200 mb-16 mt-6">
+    <div class="mb-8 flex items-center gap-4 border-b border-slate-200 pb-4">
+      <button onclick="goToHome()" class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-[#0f4c81] shadow hover:bg-slate-100 transition border border-slate-200">
+        <i class="fa-solid fa-arrow-left"></i>
+      </button>
+      <div>
+        <h2 class="text-2xl md:text-3xl font-bold text-slate-800">Thiết Lập Bài Thi ĐGNL</h2>
+        <p class="text-xs md:text-sm text-slate-500 mt-1">Tùy chỉnh thời lượng, số lượng câu hỏi và chuyên khoa muốn tập trung ôn luyện.</p>
+      </div>
     </div>
 
     <div class="flex flex-col lg:flex-row gap-6">
@@ -227,7 +234,7 @@
           <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
             <i class="fas fa-layer-group text-[#0f4c81]"></i> Phạm vi kiến thức (17 Hệ thống)
           </h3>
-          <button id="btn-toggle-all" class="text-sm font-semibold text-[#0f4c81] hover:text-blue-800 bg-blue-50 px-3 py-1.5 rounded-md">
+          <button id="btn-toggle-all" class="text-sm font-semibold text-[#0f4c81] hover:text-blue-800 bg-blue-50 px-3 py-1.5 rounded-md border border-blue-200">
             Bỏ chọn tất cả
           </button>
         </div>
@@ -679,6 +686,7 @@ db.ref('online_sessions').on('value', (snapshot) => {
         Papa.parse(ADVANCED_SHEET_CSV_URL, {
             download: true, header: true, skipEmptyLines: true,
             complete: function(results) {
+                const validRows = results.data.filter(q => q.content && q.optA);
                 advancedQuestions = validRows;
                 document.getElementById('count-advanced').innerText = advancedQuestions.length;
                 document.getElementById('loading').classList.add('hidden');
@@ -702,12 +710,14 @@ db.ref('online_sessions').on('value', (snapshot) => {
       select.value = "ALL";
     }
 
+    function hideAllViews() {
         document.getElementById('home-dashboard').classList.add('hidden');
         document.getElementById('exam-container').classList.add('hidden');
         document.getElementById('result-view').classList.add('hidden');
         document.getElementById('leaderboard-view').classList.add('hidden');
         document.getElementById('timer-box').classList.add('hidden');
-        
+        document.getElementById('exam-builder-view').classList.add('hidden');
+    }
 
     function goToHome() {
       if (currentMode === 'exam' && timeRemaining > 0) {
@@ -717,7 +727,13 @@ db.ref('online_sessions').on('value', (snapshot) => {
       currentMode = 'home';
       hideAllViews();
       document.getElementById('home-dashboard').classList.remove('hidden');
-      
+    }
+    
+    function showExamBuilder() {
+        hideAllViews();
+        document.getElementById('exam-builder-view').classList.remove('hidden');
+        document.getElementById('exam-builder-view').classList.add('flex', 'flex-col');
+    }
 
         // Hàm xáo trộn thông minh: Giữ nguyên các câu hỏi chuỗi (Grouped Shuffle)
     function shuffleQuestions(questions) {
@@ -1112,4 +1128,3 @@ document.addEventListener("DOMContentLoaded", () => {
 </script>
 </body>
 </html>
-
