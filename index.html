@@ -139,8 +139,8 @@
         <button onclick="startPracticeMode()" class="w-full py-3 bg-[#0f4c81] hover:bg-[#145d9c] text-white rounded-xl text-xs font-bold uppercase tracking-wider shadow transition flex items-center justify-center">
           <i class="fa-solid fa-play mr-2"></i> Bắt đầu luyện tập
         </button>
-      </div>
-
+      </div>      
+      
       <!-- Chế độ Thi Thử (Bộ Vận Dụng Cao) -->
       <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col justify-between hover:shadow-md transition relative overflow-hidden">
         <div>
@@ -166,6 +166,157 @@
     </div>
   </main>
 
+<div id="exam-builder-view">  
+<!-- BẮT ĐẦU: GIAO DIỆN TẠO ĐỀ THI TÙY CHỈNH -->
+<div class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 bg-slate-50 min-h-screen font-sans">
+  
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-slate-800">Thiết Lập Bài Thi ĐGNL</h1>
+    <p class="text-slate-500 mt-2">Tùy chỉnh thời lượng, số lượng câu hỏi và chuyên khoa muốn tập trung ôn luyện.</p>
+  </div>
+
+  <div class="flex flex-col lg:flex-row gap-6">
+    
+    <!-- CỘT TRÁI: BẢNG ĐIỀU KHIỂN CÀI ĐẶT -->
+    <aside class="w-full lg:w-1/3 flex flex-col gap-6">
+      
+      <!-- Box Cài đặt thông số -->
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+        <h2 class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
+          <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+          Cấu hình đề thi
+        </h2>
+        
+        <!-- Chọn thời gian -->
+        <div class="mb-6">
+          <div class="flex justify-between items-end mb-2">
+            <label class="text-sm font-semibold text-slate-600">Thời gian làm bài</label>
+            <span class="text-xl font-bold text-blue-600"><span id="val-time">60</span> <span class="text-sm font-normal text-slate-500">phút</span></span>
+          </div>
+          <input type="range" id="slider-time" min="15" max="180" step="15" value="60" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600">
+          <div class="flex justify-between text-xs text-slate-400 mt-2">
+            <span>15p</span>
+            <span>180p</span>
+          </div>
+        </div>
+
+        <!-- Chọn số lượng câu hỏi -->
+        <div class="mb-6">
+          <div class="flex justify-between items-end mb-2">
+            <label class="text-sm font-semibold text-slate-600">Số lượng câu hỏi</label>
+            <span class="text-xl font-bold text-blue-600"><span id="val-questions">60</span> <span class="text-sm font-normal text-slate-500">câu</span></span>
+          </div>
+          <input type="range" id="slider-questions" min="10" max="120" step="10" value="60" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600">
+          <div class="flex justify-between text-xs text-slate-400 mt-2">
+            <span>10</span>
+            <span>120</span>
+          </div>
+        </div>
+
+        <!-- Nguồn câu hỏi (Độ khó) -->
+        <div>
+          <label class="text-sm font-semibold text-slate-600 mb-3 block">Nguồn dữ liệu (Độ khó)</label>
+          <div class="flex flex-col gap-3">
+            <label class="flex items-center gap-3 p-3 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-50 transition">
+              <input type="checkbox" id="chk-basic" checked class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500 accent-blue-600">
+              <span class="text-sm text-slate-700 font-medium">Luyện tập cơ bản (Mức 1-3)</span>
+            </label>
+            <label class="flex items-center gap-3 p-3 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-50 transition">
+              <input type="checkbox" id="chk-advanced" checked class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500 accent-blue-600">
+              <span class="text-sm text-slate-700 font-medium">Vận dụng cao / Tình huống (Mức 4-5)</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Nút Tạo Đề -->
+      <button id="btn-generate-exam" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg py-4 rounded-xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1 flex justify-center items-center gap-2">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        BẮT ĐẦU THI
+      </button>
+    </aside>
+
+    <!-- CỘT PHẢI: LỰA CHỌN CHUYÊN KHOA VÀ VẤN ĐỀ -->
+    <main class="w-full lg:w-2/3 bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+          <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+          Phạm vi kiến thức (17 Hệ thống)
+        </h2>
+        <button id="btn-toggle-all" class="text-sm font-semibold text-blue-600 hover:text-blue-800 bg-blue-50 px-3 py-1.5 rounded-md">
+          Chọn tất cả
+        </button>
+      </div>
+
+      <!-- Khung tìm kiếm chuyên khoa -->
+      <div class="relative mb-6">
+        <input type="text" id="search-topic" placeholder="Tìm kiếm hệ cơ quan hoặc vấn đề (VD: Tim mạch, Vàng da...)" class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+        <svg class="w-5 h-5 text-slate-400 absolute left-3 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+      </div>
+
+      <!-- Lưới Chủ đề (Ví dụ tượng trưng) -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 h-[calc(100vh-320px)] min-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+        
+        <!-- HỆ TIM MẠCH -->
+        <div class="topic-group border border-slate-200 rounded-lg overflow-hidden">
+          <div class="bg-slate-50 px-4 py-3 flex items-center justify-between border-b border-slate-200">
+            <label class="flex items-center gap-3 font-semibold text-slate-700 cursor-pointer">
+              <input type="checkbox" class="chk-group w-4 h-4 text-blue-600 rounded accent-blue-600" checked>
+              Hệ Tim Mạch
+            </label>
+            <span class="text-xs font-bold text-slate-400 bg-white px-2 py-1 rounded-full border border-slate-200">5 Vấn đề</span>
+          </div>
+          <div class="p-4 flex flex-col gap-2">
+            <label class="flex items-start gap-2 cursor-pointer group">
+              <input type="checkbox" value="Tăng huyết áp" class="chk-topic mt-1 w-4 h-4 text-blue-600 rounded accent-blue-600" checked>
+              <span class="text-sm text-slate-600 group-hover:text-blue-600">Vấn đề 33: Tăng huyết áp</span>
+            </label>
+            <label class="flex items-start gap-2 cursor-pointer group">
+              <input type="checkbox" value="Đau thắt ngực" class="chk-topic mt-1 w-4 h-4 text-blue-600 rounded accent-blue-600" checked>
+              <span class="text-sm text-slate-600 group-hover:text-blue-600">Vấn đề 34: Đau thắt ngực / NMCT</span>
+            </label>
+            <!-- Thêm các vấn đề khác... -->
+          </div>
+        </div>
+
+        <!-- HỆ TIÊU HÓA -->
+        <div class="topic-group border border-slate-200 rounded-lg overflow-hidden">
+          <div class="bg-slate-50 px-4 py-3 flex items-center justify-between border-b border-slate-200">
+            <label class="flex items-center gap-3 font-semibold text-slate-700 cursor-pointer">
+              <input type="checkbox" class="chk-group w-4 h-4 text-blue-600 rounded accent-blue-600" checked>
+              Hệ Tiêu Hóa
+            </label>
+            <span class="text-xs font-bold text-slate-400 bg-white px-2 py-1 rounded-full border border-slate-200">16 Vấn đề</span>
+          </div>
+          <div class="p-4 flex flex-col gap-2">
+            <label class="flex items-start gap-2 cursor-pointer group">
+              <input type="checkbox" value="Đau bụng cấp" class="chk-topic mt-1 w-4 h-4 text-blue-600 rounded accent-blue-600" checked>
+              <span class="text-sm text-slate-600 group-hover:text-blue-600">Vấn đề 49: Đau bụng cấp</span>
+            </label>
+            <label class="flex items-start gap-2 cursor-pointer group">
+              <input type="checkbox" value="Viêm tụy cấp" class="chk-topic mt-1 w-4 h-4 text-blue-600 rounded accent-blue-600" checked>
+              <span class="text-sm text-slate-600 group-hover:text-blue-600">Vấn đề 50: Viêm tụy cấp</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- BẠN CÓ THỂ RENDER BẰNG VÒNG LẶP JAVASCRIPT CHO 17 HỆ TẠI ĐÂY -->
+
+      </div>
+    </main>
+
+  </div>
+</div>
+<!-- KẾT THÚC: GIAO DIỆN TẠO ĐỀ THI TÙY CHỈNH -->
+
+<!-- Thêm một chút style cho thanh cuộn đẹp hơn -->
+<style>
+  .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+  .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
+  .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+</style>
+  
   <!-- 2. GIAO DIỆN PHÒNG THI -->
   <main id="exam-container" class="hidden flex-1 max-w-7xl w-full mx-auto p-3 md:p-4 grid grid-cols-1 lg:grid-cols-4 gap-4">
     <section class="lg:col-span-3 flex flex-col space-y-4">
@@ -876,3 +1027,74 @@ db.ref('online_sessions').on('value', (snapshot) => {
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 </body>
 </html>
+document.addEventListener("DOMContentLoaded", () => {
+  // 1. Cập nhật hiển thị số liệu thanh trượt (Range Slider)
+  const sliderTime = document.getElementById('slider-time');
+  const valTime = document.getElementById('val-time');
+  const sliderQuestions = document.getElementById('slider-questions');
+  const valQuestions = document.getElementById('val-questions');
+
+  sliderTime.addEventListener('input', (e) => valTime.textContent = e.target.value);
+  sliderQuestions.addEventListener('input', (e) => valQuestions.textContent = e.target.value);
+
+  // 2. Logic Check/Uncheck All Chủ đề
+  const btnToggleAll = document.getElementById('btn-toggle-all');
+  const allTopicCheckboxes = document.querySelectorAll('.chk-topic');
+  const allGroupCheckboxes = document.querySelectorAll('.chk-group');
+  let isAllChecked = true;
+
+  btnToggleAll.addEventListener('click', () => {
+    isAllChecked = !isAllChecked;
+    allTopicCheckboxes.forEach(chk => chk.checked = isAllChecked);
+    allGroupCheckboxes.forEach(chk => chk.checked = isAllChecked);
+    btnToggleAll.textContent = isAllChecked ? "Bỏ chọn tất cả" : "Chọn tất cả";
+  });
+
+  // 3. Xử lý Logic Check Group (Khi click vào tên 1 Hệ thống)
+  allGroupCheckboxes.forEach(groupChk => {
+    groupChk.addEventListener('change', (e) => {
+      const parentContainer = e.target.closest('.topic-group');
+      const childCheckboxes = parentContainer.querySelectorAll('.chk-topic');
+      childCheckboxes.forEach(chk => chk.checked = e.target.checked);
+    });
+  });
+
+  // 4. Bắt sự kiện Bấm nút "BẮT ĐẦU THI"
+  document.getElementById('btn-generate-exam').addEventListener('click', () => {
+    // Lấy thông số từ UI
+    const timeLimit = parseInt(sliderTime.value); // Thời gian (phút)
+    const questionLimit = parseInt(sliderQuestions.value); // Số lượng câu
+    const useBasic = document.getElementById('chk-basic').checked;
+    const useAdvanced = document.getElementById('chk-advanced').checked;
+
+    // Lấy danh sách các chuyên khoa/vấn đề đang được tick chọn
+    const selectedTopics = [];
+    document.querySelectorAll('.chk-topic:checked').forEach(chk => {
+      selectedTopics.push(chk.value); // Lưu ý: Thuộc tính 'value' trong HTML nên trùng với tên chuyên khoa trong CSV của bạn
+    });
+
+    if (selectedTopics.length === 0) {
+      alert("Vui lòng chọn ít nhất một chuyên khoa/vấn đề để tạo đề thi!");
+      return;
+    }
+
+    if (!useBasic && !useAdvanced) {
+      alert("Vui lòng chọn ít nhất một nguồn dữ liệu (Cơ bản hoặc Vận dụng cao)!");
+      return;
+    }
+
+    // ==== LIÊN KẾT VỚI HỆ THỐNG HIỆN TẠI CỦA BẠN ====
+    // Ở đây bạn sẽ filter mảng `basicQuestions` và `advancedQuestions` hiện có 
+    // của bạn dựa theo các biến selectedTopics, timeLimit, và questionLimit.
+    
+    console.log("Cấu hình đề thi:", {
+      time: timeLimit,
+      questions: questionLimit,
+      sources: { basic: useBasic, advanced: useAdvanced },
+      topics: selectedTopics
+    });
+
+    // Hàm giả định để gọi hệ thống làm bài của bạn (cần điều chỉnh theo code thực tế)
+    // generateCustomExam(timeLimit, questionLimit, useBasic, useAdvanced, selectedTopics);
+  });
+});
