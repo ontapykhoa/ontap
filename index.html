@@ -146,7 +146,7 @@
         </button>
       </div>      
       
-      <!-- Chế độ Thi Thử -->
+      <!-- Chế độ Thi Thử (Bộ Vận Dụng Cao) -->
       <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col justify-between hover:shadow-md transition relative overflow-hidden">
         <div>
           <div class="w-12 h-12 bg-rose-50 text-rose-600 rounded-xl flex items-center justify-center text-2xl font-bold mb-4">
@@ -413,6 +413,7 @@
     let activeQuestions = [], currentIdx = 0, userAnswers = {}, flaggedSet = new Set();
     let currentMode = 'home', timerInterval = null, timeRemaining = 0;
     
+    // Auth State
     let currentUser = localStorage.getItem('medpass_current_user') || null;
     let authMode = 'login'; 
 
@@ -447,6 +448,7 @@
         document.getElementById('auth-error').classList.add('hidden');
     }
 
+    // Tương tác API Đăng ký / Đăng nhập
     function handleAuth(e) {
         e.preventDefault();
         const user = document.getElementById('auth-username').value.trim();
@@ -495,6 +497,7 @@
         goToHome();
     }
 
+    // BXH Tương tác API
     function showLeaderboard() {
         clearInterval(timerInterval);
         hideAllViews();
@@ -589,6 +592,9 @@
         });
     }
 
+    // =========================================================================
+    // KHỞI ĐỘNG ỨNG DỤNG VÀ HỆ THỐNG CÂU HỎI
+    // =========================================================================
     function initApp() {
       initAuth();
       buildTopicDropdowns();
@@ -607,6 +613,7 @@
       fetch(`https://countapi.mileshilliard.com/api/v1/${isNewSession?'hit':'get'}/${dateKey}`)
         .then(r => r.json()).then(data => { if(data && data.value) document.getElementById('stat-today-visits').innerText = Number(data.value).toLocaleString('vi-VN'); }).catch(()=>{});
         
+// Cấu hình Firebase Realtime Database
 const firebaseConfig = {
   apiKey: "AIzaSyBD71Ubgi4xuvpWfW-WJP1bVi8GK3TduGE",
   authDomain: "ontapykhoa-6911b.firebaseapp.com",
@@ -618,11 +625,13 @@ const firebaseConfig = {
   measurementId: "G-0VPKTSF5BD"
 };
 
+// Khởi tạo Firebase
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 const db = firebase.database();
 
+// Ghi nhận phiên truy cập hiện tại
 const userSessionRef = db.ref('online_sessions').push();
 const connectedRef = db.ref('.info/connected');
 
@@ -633,6 +642,7 @@ connectedRef.on('value', (snap) => {
   }
 });
 
+// Cập nhật số người online thực tế lên giao diện
 db.ref('online_sessions').on('value', (snapshot) => {
   const onlineCount = snapshot.numChildren();
   const el = document.getElementById('stat-online-users');
@@ -935,39 +945,38 @@ document.addEventListener("DOMContentLoaded", () => {
       
       if(match) {
         groupName = match[1].trim();
-        let start = parseInt(match[2]);
-        let end = parseInt(match[3]);
+        let start = parseInt(match[2], 10);
+        let end = parseInt(match[3], 10);
         for(let i = start; i <= end; i++) {
-          issues.push(`Vấn đề ${i}`);
+          issues.push("Vấn đề " + i);
         }
       } else {
         issues.push(fullGroupName);
       }
 
-      let issuesHtml = issues.map(issue => `
-        <label class="flex items-start gap-2 cursor-pointer group">
-          <input type="checkbox" value="${groupName} (${issue})" class="chk-topic mt-1 w-4 h-4 text-[#0f4c81] rounded accent-[#0f4c81]" checked>
-          <span class="text-sm text-slate-600 group-hover:text-[#0f4c81]">${issue}</span>
-        </label>
-      `).join('');
+      let issuesHtml = '';
+      issues.forEach(issue => {
+          issuesHtml += '<label class="flex items-start gap-2 cursor-pointer group">' +
+            '<input type="checkbox" value="' + groupName + ' (' + issue + ')" class="chk-topic mt-1 w-4 h-4 text-[#0f4c81] rounded accent-[#0f4c81]" checked>' +
+            '<span class="text-sm text-slate-600 group-hover:text-[#0f4c81]">' + issue + '</span>' +
+          '</label>';
+      });
 
-      html += `
-        <div class="topic-group border border-slate-200 rounded-lg overflow-hidden flex flex-col" data-group-name="${groupName.toLowerCase()}">
-          <div class="bg-slate-50 px-4 py-3 flex items-center justify-between border-b border-slate-200 gap-3">
-            <label class="flex items-center gap-3 font-semibold text-slate-700 cursor-pointer w-3/5">
-              <input type="checkbox" class="chk-group shrink-0 w-4 h-4 text-[#0f4c81] rounded accent-[#0f4c81]" checked>
-              <span class="truncate">${fullGroupName}</span>
-            </label>
-            <div class="flex items-center gap-2 w-2/5 justify-end shrink-0">
-              <span class="text-xs text-slate-500 whitespace-nowrap hidden sm:block">Số câu:</span>
-              <input type="number" class="sys-q-count w-16 px-2 py-1.5 text-sm font-bold border border-slate-300 rounded focus:outline-none focus:border-[#0f4c81] text-center text-[#0f4c81]" min="0" value="0">
-            </div>
-          </div>
-          <div class="p-4 flex flex-col gap-2 flex-1">
-            ${issuesHtml}
-          </div>
-        </div>
-      `;
+      html += '<div class="topic-group border border-slate-200 rounded-lg overflow-hidden flex flex-col" data-group-name="' + groupName.toLowerCase() + '">' +
+          '<div class="bg-slate-50 px-4 py-3 flex items-center justify-between border-b border-slate-200 gap-3">' +
+            '<label class="flex items-center gap-3 font-semibold text-slate-700 cursor-pointer w-3/5">' +
+              '<input type="checkbox" class="chk-group shrink-0 w-4 h-4 text-[#0f4c81] rounded accent-[#0f4c81]" checked>' +
+              '<span class="truncate">' + fullGroupName + '</span>' +
+            '</label>' +
+            '<div class="flex items-center gap-2 w-2/5 justify-end shrink-0">' +
+              '<span class="text-xs text-slate-500 whitespace-nowrap hidden sm:block">Số câu:</span>' +
+              '<input type="number" class="sys-q-count w-16 px-2 py-1.5 text-sm font-bold border border-slate-300 rounded focus:outline-none focus:border-[#0f4c81] text-center text-[#0f4c81]" min="0" value="0">' +
+            '</div>' +
+          '</div>' +
+          '<div class="p-4 flex flex-col gap-2 flex-1">' +
+            issuesHtml +
+          '</div>' +
+        '</div>';
     });
     topicsGrid.innerHTML = html;
   }
@@ -1053,7 +1062,7 @@ document.addEventListener("DOMContentLoaded", () => {
           alert("Lưu ý: Bạn đang thi ở chế độ Khách. Kết quả sẽ KHÔNG được lưu vào Bảng xếp hạng. Vui lòng đăng nhập ở màn hình chính!");
       }
 
-      const timeLimit = parseInt(sliderTime.value);
+      const timeLimit = parseInt(sliderTime.value, 10);
       let selectedQuestions = [];
       let errorMsg = "";
 
@@ -1064,7 +1073,7 @@ document.addEventListener("DOMContentLoaded", () => {
           if (groupChk.checked || groupChk.indeterminate) {
               const groupNameOriginal = group.querySelector('.chk-group').nextSibling.textContent.trim();
               const groupNameLower = group.getAttribute('data-group-name');
-              const qCount = parseInt(group.querySelector('.sys-q-count').value) || 0;
+              const qCount = parseInt(group.querySelector('.sys-q-count').value, 10) || 0;
               
               if (qCount > 0) {
                   const checkedTopics = Array.from(group.querySelectorAll('.chk-topic:checked')).map(chk => chk.value.toLowerCase().trim());
@@ -1076,7 +1085,7 @@ document.addEventListener("DOMContentLoaded", () => {
                   });
 
                   if (sysQuestions.length < qCount) {
-                      errorMsg += `\n- ${groupNameOriginal}: Bạn điền ${qCount} câu, nhưng ngân hàng chỉ có ${sysQuestions.length} câu phù hợp.`;
+                      errorMsg += "\\n- " + groupNameOriginal + ": Bạn điền " + qCount + " câu, nhưng ngân hàng chỉ có " + sysQuestions.length + " câu phù hợp.";
                   }
 
                   let shuffled = shuffleQuestions(sysQuestions);
@@ -1086,7 +1095,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       if (errorMsg !== "") {
-          alert("LỖI: Không đủ câu hỏi trong ngân hàng!" + errorMsg + "\n\nVui lòng giảm số câu yêu cầu ở các hệ trên.");
+          alert("LỖI: Không đủ câu hỏi trong ngân hàng!" + errorMsg + "\\n\\nVui lòng giảm số câu yêu cầu ở các hệ trên.");
           return;
       }
 
