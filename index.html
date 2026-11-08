@@ -146,7 +146,7 @@
         </button>
       </div>      
       
-      <!-- Chế độ Thi Thử (Bộ Vận Dụng Cao) -->
+      <!-- Chế độ Thi Thử -->
       <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col justify-between hover:shadow-md transition relative overflow-hidden">
         <div>
           <div class="w-12 h-12 bg-rose-50 text-rose-600 rounded-xl flex items-center justify-center text-2xl font-bold mb-4">
@@ -395,7 +395,7 @@
     const GAS_API_URL = "https://script.google.com/macros/s/AKfycbzB_qMY5R81I04Cw8CqhR7JZ4CFxfMrJnU5DiAmQmx9wicpOy_rZWIMWRSVs0HRjngeRg/exec";
     // =========================================================================
 
-    let EXAM_TIME_MINUTES = 150; // Lưu thời gian bài thi để tính timeTaken
+    let EXAM_TIME_MINUTES = 150; 
 
     const OFFICIAL_TOPICS = [
       { name: "Hệ Miễn dịch (Vấn đề 1 - 5)" }, { name: "Hệ Máu - Lưới - Bạch huyết (Vấn đề 6 - 9)" },
@@ -413,7 +413,6 @@
     let activeQuestions = [], currentIdx = 0, userAnswers = {}, flaggedSet = new Set();
     let currentMode = 'home', timerInterval = null, timeRemaining = 0;
     
-    // Auth State
     let currentUser = localStorage.getItem('medpass_current_user') || null;
     let authMode = 'login'; 
 
@@ -448,7 +447,6 @@
         document.getElementById('auth-error').classList.add('hidden');
     }
 
-    // Tương tác API Đăng ký / Đăng nhập
     function handleAuth(e) {
         e.preventDefault();
         const user = document.getElementById('auth-username').value.trim();
@@ -497,7 +495,6 @@
         goToHome();
     }
 
-    // BXH Tương tác API (Lọc 150 câu, Xếp hạng theo điểm và thời gian)
     function showLeaderboard() {
         clearInterval(timerInterval);
         hideAllViews();
@@ -511,11 +508,9 @@
         .then(data => {
             document.getElementById('lb-loading').classList.add('hidden');
             if (data.status === 'success' && data.data.length > 0) {
-                // 1. Chỉ lọc các bài thi có 150 câu
                 let filteredData = data.data.filter(r => parseInt(r.total) === 150);
 
                 if (filteredData.length > 0) {
-                    // 2. Xếp hạng: Điểm giảm dần -> Thời gian tăng dần
                     filteredData.sort((a, b) => {
                         if (b.score !== a.score) return b.score - a.score;
                         let timeA = a.timeTaken ? parseInt(a.timeTaken) : 999999;
@@ -546,8 +541,6 @@
             if(i === 2) rankBadge = '<i class="fa-solid fa-medal text-amber-700 text-lg"></i>';
             
             const formattedDate = new Date(r.date).toLocaleString('vi-VN', {hour: '2-digit', minute:'2-digit', day: '2-digit', month: '2-digit', year: 'numeric'});
-            
-            // Render thời gian (phút giây)
             const timeStr = r.timeTaken ? `${Math.floor(r.timeTaken/60)}p ${r.timeTaken%60}s` : '--';
 
             return `
@@ -574,7 +567,6 @@
         const now = new Date();
         const dateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}T${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
 
-        // Chú ý: Backend Google Apps Script của bạn CẦN cập nhật hàm saveScore để lưu thêm tham số timeTaken
         const queryParams = new URLSearchParams({
             action: 'saveScore', user: currentUser, score: score, total: total, pct: pct, timeTaken: timeTaken, date: dateStr
         }).toString();
@@ -597,9 +589,6 @@
         });
     }
 
-    // =========================================================================
-    // KHỞI ĐỘNG ỨNG DỤNG VÀ HỆ THỐNG CÂU HỎI
-    // =========================================================================
     function initApp() {
       initAuth();
       buildTopicDropdowns();
@@ -618,7 +607,6 @@
       fetch(`https://countapi.mileshilliard.com/api/v1/${isNewSession?'hit':'get'}/${dateKey}`)
         .then(r => r.json()).then(data => { if(data && data.value) document.getElementById('stat-today-visits').innerText = Number(data.value).toLocaleString('vi-VN'); }).catch(()=>{});
         
-// Cấu hình Firebase Realtime Database
 const firebaseConfig = {
   apiKey: "AIzaSyBD71Ubgi4xuvpWfW-WJP1bVi8GK3TduGE",
   authDomain: "ontapykhoa-6911b.firebaseapp.com",
@@ -630,13 +618,11 @@ const firebaseConfig = {
   measurementId: "G-0VPKTSF5BD"
 };
 
-// Khởi tạo Firebase
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 const db = firebase.database();
 
-// Ghi nhận phiên truy cập hiện tại
 const userSessionRef = db.ref('online_sessions').push();
 const connectedRef = db.ref('.info/connected');
 
@@ -647,7 +633,6 @@ connectedRef.on('value', (snap) => {
   }
 });
 
-// Cập nhật số người online thực tế lên giao diện
 db.ref('online_sessions').on('value', (snapshot) => {
   const onlineCount = snapshot.numChildren();
   const el = document.getElementById('stat-online-users');
@@ -711,9 +696,7 @@ db.ref('online_sessions').on('value', (snapshot) => {
         document.getElementById('result-view').classList.add('hidden');
         document.getElementById('leaderboard-view').classList.add('hidden');
         document.getElementById('timer-box').classList.add('hidden');
-        
-        const builderView = document.getElementById('exam-builder-view');
-        if(builderView) builderView.classList.add('hidden');
+        document.getElementById('exam-builder-view').classList.add('hidden');
     }
 
     function goToHome() {
@@ -732,7 +715,6 @@ db.ref('online_sessions').on('value', (snapshot) => {
         document.getElementById('exam-builder-view').classList.add('flex', 'flex-col');
     }
 
-    // Hàm xáo trộn thông minh: Giữ nguyên các câu hỏi chuỗi (Grouped Shuffle)
     function shuffleQuestions(questions) {
       let grouped = [];
       let i = 0;
@@ -766,7 +748,6 @@ db.ref('online_sessions').on('value', (snapshot) => {
     }
 
 
-    // CHẾ ĐỘ LUYỆN TẬP -> SỬ DỤNG BỘ CÂU HỎI CƠ BẢN
     function startPracticeMode() {
       currentMode = 'practice';
       const selected = document.getElementById('home-topic-select').value;
@@ -886,7 +867,6 @@ db.ref('online_sessions').on('value', (snapshot) => {
       hideAllViews();
       document.getElementById('result-view').classList.remove('hidden');
       
-      // Tính toán thời gian đã làm (giây)
       let timeTakenSeconds = (EXAM_TIME_MINUTES * 60) - timeRemaining;
       
       let correct = 0;
@@ -945,11 +925,13 @@ document.addEventListener("DOMContentLoaded", () => {
   if(topicsGrid && typeof OFFICIAL_TOPICS !== 'undefined') {
     let html = '';
     OFFICIAL_TOPICS.forEach((topicGroup) => {
-      if(topicGroup.name === "Toàn bộ ngân hàng đề") return;
+      if(!topicGroup || !topicGroup.name || topicGroup.name.includes("Toàn bộ ngân hàng đề")) return;
       
-      let groupName = topicGroup.name;
+      let fullGroupName = topicGroup.name;
+      let groupName = fullGroupName;
       let issues = [];
-      let match = groupName.match(/(.+?)\s*\(Vấn đề (\d+) - (\d+)\)/);
+      
+      let match = fullGroupName.match(/(.+?)\s*\(Vấn đề (\d+)\s*[-–]\s*(\d+)\)/);
       
       if(match) {
         groupName = match[1].trim();
@@ -959,7 +941,7 @@ document.addEventListener("DOMContentLoaded", () => {
           issues.push(`Vấn đề ${i}`);
         }
       } else {
-        issues.push(groupName);
+        issues.push(fullGroupName);
       }
 
       let issuesHtml = issues.map(issue => `
@@ -971,15 +953,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
       html += `
         <div class="topic-group border border-slate-200 rounded-lg overflow-hidden flex flex-col" data-group-name="${groupName.toLowerCase()}">
-          <!-- Thay đổi: Thêm ô Input số câu hỏi vào header của nhóm -->
           <div class="bg-slate-50 px-4 py-3 flex items-center justify-between border-b border-slate-200 gap-3">
             <label class="flex items-center gap-3 font-semibold text-slate-700 cursor-pointer w-3/5">
               <input type="checkbox" class="chk-group shrink-0 w-4 h-4 text-[#0f4c81] rounded accent-[#0f4c81]" checked>
-              <span class="truncate">${groupName}</span>
+              <span class="truncate">${fullGroupName}</span>
             </label>
             <div class="flex items-center gap-2 w-2/5 justify-end shrink-0">
               <span class="text-xs text-slate-500 whitespace-nowrap hidden sm:block">Số câu:</span>
-              <input type="number" class="sys-q-count w-16 px-2 py-1.5 text-sm font-bold border border-slate-300 rounded focus:outline-none focus:border-blue-500 text-center text-[#0f4c81]" min="0" value="0">
+              <input type="number" class="sys-q-count w-16 px-2 py-1.5 text-sm font-bold border border-slate-300 rounded focus:outline-none focus:border-[#0f4c81] text-center text-[#0f4c81]" min="0" value="0">
             </div>
           </div>
           <div class="p-4 flex flex-col gap-2 flex-1">
@@ -991,7 +972,6 @@ document.addEventListener("DOMContentLoaded", () => {
     topicsGrid.innerHTML = html;
   }
 
-  // Tự động tính tổng số câu hỏi từ các ô input
   function updateTotalQuestions() {
     let total = 0;
     document.querySelectorAll('.sys-q-count').forEach(input => {
@@ -1005,7 +985,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if(totalEl) totalEl.textContent = total;
   }
 
-  // Lắng nghe sự kiện thay đổi để cập nhật Tổng số câu
   document.addEventListener('input', e => {
       if(e.target.classList.contains('sys-q-count') || e.target.classList.contains('chk-group') || e.target.classList.contains('chk-topic')) {
           updateTotalQuestions();
@@ -1078,7 +1057,6 @@ document.addEventListener("DOMContentLoaded", () => {
       let selectedQuestions = [];
       let errorMsg = "";
 
-      // Nguồn mặc định 100% Vận dụng cao (hoặc fallback sang cơ bản nếu sheet vận dụng cao lỗi trống)
       const sourceQuestions = (advancedQuestions && advancedQuestions.length > 0) ? advancedQuestions : basicQuestions;
 
       document.querySelectorAll('.topic-group').forEach(group => {
@@ -1089,22 +1067,18 @@ document.addEventListener("DOMContentLoaded", () => {
               const qCount = parseInt(group.querySelector('.sys-q-count').value) || 0;
               
               if (qCount > 0) {
-                  // Lấy các vấn đề con được check
                   const checkedTopics = Array.from(group.querySelectorAll('.chk-topic:checked')).map(chk => chk.value.toLowerCase().trim());
                   
-                  // Lọc câu hỏi của riêng hệ này
                   let sysQuestions = sourceQuestions.filter(q => {
                       if(!q.specialty) return false;
                       const qSys = q.specialty.split(' (')[0].trim().toLowerCase();
                       return qSys === groupNameLower && checkedTopics.includes(q.specialty.toLowerCase().trim());
                   });
 
-                  // Kiểm tra xem hệ thống có đủ số câu hỏi trong ngân hàng không
                   if (sysQuestions.length < qCount) {
                       errorMsg += `\n- ${groupNameOriginal}: Bạn điền ${qCount} câu, nhưng ngân hàng chỉ có ${sysQuestions.length} câu phù hợp.`;
                   }
 
-                  // Trộn và lấy đủ số lượng yêu cầu
                   let shuffled = shuffleQuestions(sysQuestions);
                   selectedQuestions = selectedQuestions.concat(shuffled.slice(0, qCount));
               }
@@ -1121,11 +1095,10 @@ document.addEventListener("DOMContentLoaded", () => {
           return;
       }
 
-      // Trộn toàn bộ đề một lần cuối cùng
       activeQuestions = shuffleQuestions(selectedQuestions);
       
       currentMode = 'exam';
-      EXAM_TIME_MINUTES = timeLimit; // Lưu trữ cấu hình ban đầu
+      EXAM_TIME_MINUTES = timeLimit; 
       timeRemaining = timeLimit * 60;
       
       hideAllViews();
