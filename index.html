@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -66,8 +65,14 @@
     </div>
   </header>
 
-  <!-- Loading -->
 
+  <!-- Loading -->
+  <div id="loading" class="text-center py-28 text-slate-500">
+    <i class="fa-solid fa-circle-notch fa-spin text-4xl mb-3 text-[#0f4c81]"></i>
+    <p class="font-medium text-sm">Đang tải dữ liệu, vui lòng đợi...</p>
+  </div>
+
+  <script>
     // DÁN URL GOOGLE APPS SCRIPT WEB APP (Làm Tài khoản & BXH) VÀO ĐÂY:
     const GAS_API_URL = "https://script.google.com/macros/s/AKfycbzB_qMY5R81I04Cw8CqhR7JZ4CFxfMrJnU5DiAmQmx9wicpOy_rZWIMWRSVs0HRjngeRg/exec";
     // =========================================================================
@@ -87,6 +92,7 @@
     let allQuestions = [], basicQuestions = [], advancedQuestions = [];
     let activeQuestions = [], currentIdx = 0, userAnswers = {}, flaggedSet = new Set();
     let currentMode = 'home', timerInterval = null, timeRemaining = 0;
+    let EXAM_TIME_MINUTES = 150; 
     
     // Auth State
     let currentUser = localStorage.getItem('medpass_current_user') || null;
@@ -186,8 +192,21 @@
         .then(data => {
             document.getElementById('lb-loading').classList.add('hidden');
             if (data.status === 'success' && data.data.length > 0) {
-                renderLeaderboard(data.data);
-                document.getElementById('lb-table-container').classList.remove('hidden');
+                let filteredData = data.data.filter(r => parseInt(r.total) === 150);
+
+                if (filteredData.length > 0) {
+                    filteredData.sort((a, b) => {
+                        if (b.score !== a.score) return b.score - a.score;
+                        let timeA = a.timeTaken ? parseInt(a.timeTaken) : 999999;
+                        let timeB = b.timeTaken ? parseInt(b.timeTaken) : 999999;
+                        return timeA - timeB;
+                    });
+
+                    renderLeaderboard(filteredData);
+                    document.getElementById('lb-table-container').classList.remove('hidden');
+                } else {
+                    document.getElementById('empty-leaderboard').classList.remove('hidden');
+                }
             } else {
                 document.getElementById('empty-leaderboard').classList.remove('hidden');
             }
@@ -207,6 +226,7 @@
             
             // Format ngày giờ Việt Nam
             const formattedDate = new Date(r.date).toLocaleString('vi-VN', {hour: '2-digit', minute:'2-digit', day: '2-digit', month: '2-digit', year: 'numeric'});
+            const timeStr = r.timeTaken ? `${Math.floor(r.timeTaken/60)}p ${r.timeTaken%60}s` : '--';
 
             return `
             <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
@@ -214,12 +234,13 @@
                 <td class="p-3 font-bold text-[#0f4c81]">${r.user}</td>
                 <td class="p-3 text-center">${r.score} / ${r.total}</td>
                 <td class="p-3 text-center font-bold ${r.pct >= 70 ? 'text-emerald-600' : 'text-rose-600'}">${r.pct}%</td>
+                <td class="p-3 text-center text-slate-600">${timeStr}</td>
                 <td class="p-3 text-right text-xs text-slate-500">${formattedDate}</td>
             </tr>
         `}).join('');
     }
 
-    function saveScore(score, total, pct) {
+    function saveScore(score, total, pct, timeTaken) {
         if (!currentUser) return; 
 
         const msgEl = document.getElementById('score-saving-msg');
@@ -231,8 +252,8 @@
         const now = new Date();
         const dateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}T${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
 
-        const queryParams = new URLSearchParams({
-            action: 'saveScore', user: currentUser, score: score, total: total, pct: pct, date: dateStr
+        const queryParams = newSearchParams({
+            action: 'saveScore', user: currentUser, score: score, total: total, pct: pct, timeTaken: timeTaken, date: dateStr
         }).toString();
 
         fetch(`${GAS_API_URL}?${queryParams}`, { method: 'POST' })
@@ -346,6 +367,7 @@ db.ref('online_sessions').on('value', (snapshot) => {
         Papa.parse(ADVANCED_SHEET_CSV_URL, {
             download: true, header: true, skipEmptyLines: true,
             complete: function(results) {
+                const validRows = results.data.filter(q => q.content && q.optA);
                 advancedQuestions = validRows;
                 document.getElementById('count-advanced').innerText = advancedQuestions.length;
                 document.getElementById('loading').classList.add('hidden');
@@ -369,12 +391,14 @@ db.ref('online_sessions').on('value', (snapshot) => {
       select.value = "ALL";
     }
 
+    function hideAllViews() {
         document.getElementById('home-dashboard').classList.add('hidden');
         document.getElementById('exam-container').classList.add('hidden');
         document.getElementById('result-view').classList.add('hidden');
         document.getElementById('leaderboard-view').classList.add('hidden');
         document.getElementById('timer-box').classList.add('hidden');
-        
+        document.getElementById('exam-builder-view').classList.add('hidden');
+    }
 
     function goToHome() {
       if (currentMode === 'exam' && timeRemaining > 0) {
@@ -384,7 +408,13 @@ db.ref('online_sessions').on('value', (snapshot) => {
       currentMode = 'home';
       hideAllViews();
       document.getElementById('home-dashboard').classList.remove('hidden');
-      
+    }
+
+    function showExamBuilder() {
+        hideAllViews();
+        document.getElementById('exam-builder-view').classList.remove('hidden');
+        document.getElementById('exam-builder-view').classList.add('flex', 'flex-col');
+    }
 
         // Hàm xáo trộn thông minh: Giữ nguyên các câu hỏi chuỗi (Grouped Shuffle)
     function shuffleQuestions(questions) {
@@ -396,26 +426,22 @@ db.ref('online_sessions').on('value', (snapshot) => {
         if (match) {
           let chainLength = parseInt(match[1], 10);
           let chain = [];
-          // Gom đủ số câu của chuỗi vào một nhóm
           for (let j = 0; j < chainLength && (i + j) < questions.length; j++) {
             chain.push(questions[i + j]);
           }
           grouped.push(chain);
           i += chainLength;
         } else {
-          // Câu hỏi đơn lẻ
           grouped.push([q]);
           i++;
         }
       }
 
-      // Xáo trộn các nhóm (Fisher-Yates)
       for (let idx = grouped.length - 1; idx > 0; idx--) {
         const jdx = Math.floor(Math.random() * (idx + 1));
         [grouped[idx], grouped[jdx]] = [grouped[jdx], grouped[idx]];
       }
 
-      // Trải phẳng mảng trở lại
       let result = [];
       grouped.forEach(group => {
         result.push(...group);
@@ -464,9 +490,7 @@ db.ref('online_sessions').on('value', (snapshot) => {
       const tM = text.match(/\[img:\s*(https?:\/\/[^\s\]]+)\s*\]/i);
       if (tM) { img = tM[1]; text = text.replace(tM[0], ''); }
       
-      // Ẩn mã [Chuoi...] khỏi màn hình hiển thị
       text = text.replace(/\[Chuoi\d+\]\\n/gi, '').replace(/\[Chuoi\d+\]/gi, ''); 
-      
       text = text.replaceAll(/\\n/g, '<br>').replaceAll('<br><br>', '<br>').trim();
 
       document.getElementById('content-display').innerHTML = text;
@@ -546,6 +570,8 @@ db.ref('online_sessions').on('value', (snapshot) => {
       hideAllViews();
       document.getElementById('result-view').classList.remove('hidden');
       
+      let timeTakenSeconds = (EXAM_TIME_MINUTES * 60) - timeRemaining;
+      
       let correct = 0;
       const bd = {};
       activeQuestions.forEach((q, i) => {
@@ -574,7 +600,7 @@ db.ref('online_sessions').on('value', (snapshot) => {
         </div>`;
       }).join('');
 
-      if (currentMode === 'exam') saveScore(correct, total, pct);
+      if (currentMode === 'exam') saveScore(correct, total, pct, timeTakenSeconds);
     }
 
     function reviewAnswers() {
@@ -600,6 +626,108 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if(sliderTime) sliderTime.addEventListener('input', (e) => valTime.textContent = e.target.value);
   if(sliderQuestions) sliderQuestions.addEventListener('input', (e) => valQuestions.textContent = e.target.value);
+
+  const topicsGrid = document.getElementById('topics-grid');
+  
+  if(topicsGrid && typeof OFFICIAL_TOPICS !== 'undefined') {
+    topicsGrid.innerHTML = ''; 
+    
+    OFFICIAL_TOPICS.forEach((topicGroup) => {
+      if(!topicGroup || !topicGroup.name || topicGroup.name.includes("Toàn bộ ngân hàng đề")) return;
+      
+      let fullGroupName = topicGroup.name;
+      let groupName = fullGroupName;
+      let issues = [];
+      
+      let match = fullGroupName.match(/(.+?)\s*\(\s*Vấn đề\s*(\d+)\s*[-–]\s*(\d+)\s*\)/i);
+      
+      if(match) {
+        groupName = match[1].trim();
+        let start = parseInt(match[2], 10);
+        let end = parseInt(match[3], 10);
+        for(let i = start; i <= end; i++) {
+          issues.push("Vấn đề " + i);
+        }
+      } else {
+        issues.push(fullGroupName);
+      }
+
+      const groupDiv = document.createElement('div');
+      groupDiv.className = "topic-group border border-slate-200 rounded-lg overflow-hidden flex flex-col";
+      groupDiv.setAttribute("data-group-name", groupName.toLowerCase());
+
+      const headerDiv = document.createElement('div');
+      headerDiv.className = "bg-slate-50 px-4 py-3 flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-200 gap-3";
+      
+      const labelDiv = document.createElement('label');
+      labelDiv.className = "flex items-center gap-3 font-semibold text-slate-700 cursor-pointer w-full sm:w-1/2";
+      
+      const chkGroup = document.createElement('input');
+      chkGroup.type = "checkbox";
+      chkGroup.className = "chk-group shrink-0 w-4 h-4 text-[#0f4c81] rounded accent-[#0f4c81]";
+      chkGroup.checked = true;
+      
+      const spanGroup = document.createElement('span');
+      spanGroup.className = "truncate text-sm";
+      spanGroup.innerText = fullGroupName;
+      
+      labelDiv.appendChild(chkGroup);
+      labelDiv.appendChild(spanGroup);
+      
+      const inputDiv = document.createElement('div');
+      inputDiv.className = "flex items-center gap-3 w-full sm:w-1/2 justify-between sm:justify-end shrink-0";
+      
+      const spanInput = document.createElement('span');
+      spanInput.className = "text-xs text-slate-500 whitespace-nowrap";
+      spanInput.innerText = "Tối đa:";
+      
+      const valDisplay = document.createElement('span');
+      valDisplay.className = "text-sm font-bold text-[#0f4c81] w-8 text-right";
+      valDisplay.innerText = "15"; 
+      valDisplay.id = "val-group-" + groupName.replace(/\s+/g, '-').toLowerCase();
+
+      const inputQCount = document.createElement('input');
+      inputQCount.type = "range";
+      inputQCount.className = "sys-q-count w-24 h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#0f4c81]";
+      inputQCount.min = "0";
+      inputQCount.max = "30"; 
+      inputQCount.value = "15";
+      inputQCount.oninput = function() { valDisplay.innerText = this.value; };
+      
+      inputDiv.appendChild(spanInput);
+      inputDiv.appendChild(inputQCount);
+      inputDiv.appendChild(valDisplay);
+      
+      headerDiv.appendChild(labelDiv);
+      headerDiv.appendChild(inputDiv);
+      groupDiv.appendChild(headerDiv);
+
+      const issuesDiv = document.createElement('div');
+      issuesDiv.className = "p-4 flex flex-col gap-2 flex-1";
+
+      issues.forEach(issue => {
+          const lbl = document.createElement('label');
+          lbl.className = "flex items-start gap-2 cursor-pointer group";
+          
+          const chkTopic = document.createElement('input');
+          chkTopic.type = "checkbox";
+          chkTopic.value = groupName + " (" + issue + ")";
+          chkTopic.className = "chk-topic mt-1 w-4 h-4 text-[#0f4c81] rounded accent-[#0f4c81]";
+          chkTopic.checked = true;
+          
+          const spanTopic = document.createElement('span');
+          spanTopic.className = "text-sm text-slate-600 group-hover:text-[#0f4c81]";
+          spanTopic.innerText = issue;
+          
+          lbl.appendChild(chkTopic);
+          lbl.appendChild(spanTopic);
+          issuesDiv.appendChild(lbl);
+      });
+
+      groupDiv.appendChild(issuesDiv);
+      topicsGrid.appendChild(groupDiv);
+    });
+  }
 
   const btnToggleAll = document.getElementById('btn-toggle-all');
   let isAllChecked = true;
@@ -650,7 +778,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 topicChk.parentElement.style.display = 'none';
             }
         });
-        group.style.display = hasMatch ? 'block' : 'none';
+        group.style.display = hasMatch ? 'flex' : 'none';
       });
     });
   }
@@ -662,50 +790,48 @@ document.addEventListener("DOMContentLoaded", () => {
           alert("Lưu ý: Bạn đang thi ở chế độ Khách. Kết quả sẽ KHÔNG được lưu vào Bảng xếp hạng. Vui lòng đăng nhập ở màn hình chính!");
       }
 
-      const timeLimit = parseInt(sliderTime.value);
-      const questionLimit = parseInt(sliderQuestions.value);
-      const useBasic = document.getElementById('chk-basic').checked;
-      const useAdvanced = document.getElementById('chk-advanced').checked;
+      const timeLimit = parseInt(sliderTime.value, 10);
+      const masterLimit = parseInt(sliderQuestions.value, 10);
 
-      const selectedTopics = [];
-      document.querySelectorAll('.chk-topic:checked').forEach(chk => {
-        let systemName = chk.value.split(' (')[0]; 
-        if(!selectedTopics.includes(systemName)) {
-            selectedTopics.push(systemName);
-        }
+      const sourceQuestions = (advancedQuestions && advancedQuestions.length > 0) ? advancedQuestions : basicQuestions;
+      
+      let pool = [];
+
+      document.querySelectorAll('.topic-group').forEach(group => {
+          const groupChk = group.querySelector('.chk-group');
+          if (groupChk.checked || groupChk.indeterminate) {
+              const groupNameLower = group.getAttribute('data-group-name');
+              const qCount = parseInt(group.querySelector('.sys-q-count').value, 10) || 0;
+              
+              if (qCount > 0) {
+                  const checkedTopics = Array.from(group.querySelectorAll('.chk-topic:checked')).map(chk => chk.value.toLowerCase().trim());
+                  
+                  let sysQuestions = sourceQuestions.filter(q => {
+                      if(!q.specialty) return false;
+                      const qSys = q.specialty.split(' (')[0].trim().toLowerCase();
+                      return qSys === groupNameLower && checkedTopics.includes(q.specialty.toLowerCase().trim());
+                  });
+
+                  let shuffled = shuffleQuestions(sysQuestions);
+                  pool = pool.concat(shuffled.slice(0, qCount));
+              }
+          }
       });
 
-      if (selectedTopics.length === 0) {
-        alert("Vui lòng tick chọn ít nhất một chuyên khoa/vấn đề để tạo đề thi!");
-        return;
-      }
-      if (!useBasic && !useAdvanced) {
-        alert("Vui lòng chọn ít nhất một nguồn dữ liệu (Cơ bản hoặc Vận dụng cao)!");
-        return;
-      }
-
-      let sourceQuestions = [];
-      if(useBasic && typeof basicQuestions !== 'undefined') {
-          sourceQuestions = sourceQuestions.concat(basicQuestions);
-      }
-      if(useAdvanced && typeof advancedQuestions !== 'undefined') {
-          sourceQuestions = sourceQuestions.concat(advancedQuestions);
+      if (pool.length === 0) {
+          alert("Vui lòng chọn số lượng câu hỏi > 0 ở ít nhất một chuyên khoa bên phải!");
+          return;
       }
       
-      let filteredQuestions = sourceQuestions.filter(q => {
-         if(!q.specialty) return false;
-         let qSys = q.specialty.split(' (')[0];
-         return selectedTopics.includes(qSys);
-      });
-      
-      if(filteredQuestions.length === 0) {
-          alert("Không tìm thấy câu hỏi nào thuộc các chủ đề bạn vừa chọn. Vui lòng tick chọn rộng hơn.");
+      if (pool.length < masterLimit) {
+          alert("Tổng số câu hỏi tối đa từ các hệ thống bạn chọn (" + pool.length + " câu) đang ít hơn số câu yêu cầu của đề thi (" + masterLimit + " câu).\n\nVui lòng kéo thanh trượt 'Số lượng câu hỏi' bên trái xuống, hoặc tăng số lượng ở các hệ chuyên khoa bên phải lên.");
           return;
       }
 
-      activeQuestions = shuffleQuestions(filteredQuestions).slice(0, questionLimit);
+      activeQuestions = shuffleQuestions(pool).slice(0, masterLimit);
       
       currentMode = 'exam';
+      EXAM_TIME_MINUTES = timeLimit; 
       timeRemaining = timeLimit * 60;
       
       hideAllViews();
@@ -728,16 +854,7 @@ document.addEventListener("DOMContentLoaded", () => {
       displayQuestion(currentIdx);
     });
   }
-
-// Thêm logic xử lý giao diện thanh trượt số lượng câu hỏi và cập nhật tạo đề thi
 });
-
 </script>
 </body>
-
-                  if (sysQuestions.length < qCount) {
-                      errorMsg += "\\n- " + groupNameOriginal + ": Bạn điền " + qCount + " câu, nhưng ngân hàng chỉ có " + sysQuestions.length + " câu phù hợp.";
-                  }
-          alert("LỖI: Không đủ câu hỏi trong ngân hàng!" + errorMsg + "\\n\\nVui lòng giảm số câu yêu cầu ở các hệ trên.");
 </html>
-
