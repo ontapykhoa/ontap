@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -66,336 +67,10 @@
   </header>
 
   <!-- Loading -->
-  <div id="loading" class="text-center py-28 text-slate-500">
-    <i class="fa-solid fa-circle-notch fa-spin text-4xl mb-3 text-[#0f4c81]"></i>
-    <p class="font-medium text-sm">Đang tải dữ liệu, vui lòng đợi...</p>
-    <div id="fallback-alert" class="hidden mt-4 max-w-md mx-auto p-3 bg-amber-50 border border-amber-200 text-amber-800 text-xs rounded-xl">
-      <i class="fa-solid fa-triangle-exclamation mr-1"></i> Chưa kết nối được file Google Sheets.
-    </div>
-  </div>
-
-  <!-- 1. MÀN HÌNH CHÍNH (DASHBOARD) -->
-  <main id="home-dashboard" class="hidden flex-1 max-w-5xl w-full mx-auto p-4 md:p-8 flex flex-col justify-center">
-    <div class="bg-gradient-to-r from-[#0f4c81] to-[#1c6ca4] text-white rounded-2xl p-6 md:p-8 shadow-lg mb-6 relative overflow-hidden">
-      <div class="relative z-10 max-w-2xl">
-        <h2 class="text-xl md:text-2xl font-bold mb-2">Hệ Thống Ôn Luyện Đánh Giá Năng Lực Bác Sĩ Y Khoa</h2>
-        <p class="text-xs md:text-sm text-blue-100 leading-relaxed">
-          Ngân hàng câu hỏi trắc nghiệm lâm sàng theo 128 vấn đề cốt lõi. Mô phỏng phần mềm thi máy tính (CBT) chuẩn hóa của Hội đồng Y khoa Quốc gia.
-        </p>
-        <div class="mt-4 flex flex-wrap gap-4 text-xs text-blue-200">
-          <span class="bg-blue-800/50 px-3 py-1.5 rounded-lg"><i class="fa-solid fa-book-medical mr-1.5"></i> Luyện tập: <strong id="count-basic" class="text-white font-bold">0</strong> câu</span>
-          <span class="bg-rose-800/50 px-3 py-1.5 rounded-lg"><i class="fa-solid fa-brain mr-1.5"></i> Thi thử: <strong id="count-advanced" class="text-white font-bold">0</strong> câu</span>
-        </div>
-      </div>
-      <div class="absolute -right-6 -bottom-8 text-blue-400/20 text-9xl pointer-events-none">
-        <i class="fa-solid fa-staff-snake"></i>
-      </div>
-    </div>
-
-    <!-- KHỐI THỐNG KÊ LƯU LƯỢNG TRUY CẬP -->
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-3.5">
-        <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl font-bold relative shrink-0">
-          <i class="fa-solid fa-users"></i>
-          <span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-emerald-500 rounded-full animate-ping"></span>
-          <span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-emerald-500 rounded-full"></span>
-        </div>
-        <div>
-          <div class="text-[11px] text-slate-500 uppercase font-bold tracking-wider">Đang trực tuyến</div>
-          <div id="stat-online-users" class="text-xl font-extrabold text-slate-800 font-mono mt-0.5">--</div>
-        </div>
-      </div>
-      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-3.5">
-        <div class="w-12 h-12 rounded-xl bg-blue-50 text-[#0f4c81] flex items-center justify-center text-xl font-bold shrink-0">
-          <i class="fa-solid fa-calendar-day"></i>
-        </div>
-        <div>
-          <div class="text-[11px] text-slate-500 uppercase font-bold tracking-wider">Lượt xem hôm nay</div>
-          <div id="stat-today-visits" class="text-xl font-extrabold text-[#0f4c81] font-mono mt-0.5">--</div>
-        </div>
-      </div>
-      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-3.5">
-        <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl font-bold shrink-0">
-          <i class="fa-solid fa-chart-line"></i>
-        </div>
-        <div>
-          <div class="text-[11px] text-slate-500 uppercase font-bold tracking-wider">Tổng lượt truy cập</div>
-          <div id="stat-total-visits" class="text-xl font-extrabold text-slate-800 font-mono mt-0.5">--</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Hai Phân Hệ -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      
-      <!-- Chế độ Luyện Tập -->
-      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col justify-between hover:shadow-md transition">
-        <div>
-          <div class="w-12 h-12 bg-blue-50 text-[#0f4c81] rounded-xl flex items-center justify-center text-2xl font-bold mb-4">
-            <i class="fa-solid fa-book-open-reader"></i>
-          </div>
-          <h3 class="text-lg font-bold text-slate-900 mb-1">Luyện Tập</h3>
-          <p class="text-xs text-slate-500 mb-4 leading-relaxed">Ôn tập không tính thời gian, hiển thị đáp án và giải thích chi tiết sau mỗi câu.</p>
-          <div class="space-y-3 mb-6">
-            <label class="block text-xs font-bold text-slate-700">Chọn nhóm chuyên môn / hệ cơ quan:</label>
-            <select id="home-topic-select" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-xs text-slate-800 font-medium outline-none"></select>
-          </div>
-        </div>
-        <button onclick="startPracticeMode()" class="w-full py-3 bg-[#0f4c81] hover:bg-[#145d9c] text-white rounded-xl text-xs font-bold uppercase tracking-wider shadow transition flex items-center justify-center">
-          <i class="fa-solid fa-play mr-2"></i> Bắt đầu luyện tập
-        </button>
-      </div>      
-      
-      <!-- Chế độ Thi Thử -->
-      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col justify-between hover:shadow-md transition relative overflow-hidden">
-        <div>
-          <div class="w-12 h-12 bg-rose-50 text-rose-600 rounded-xl flex items-center justify-center text-2xl font-bold mb-4">
-            <i class="fa-solid fa-stopwatch"></i>
-          </div>
-          <h3 class="text-lg font-bold text-slate-900 mb-1">Mô Phỏng Thi Thử</h3>
-          <p class="text-xs text-slate-500 mb-4 leading-relaxed">Hệ thống sẽ khóa đáp án, trộn đề ngẫu nhiên, bấm giờ và lưu BXH.</p>
-        </div>
-        <button onclick="showExamBuilder()" class="w-full py-3 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold uppercase tracking-wider shadow transition flex items-center justify-center">
-          <i class="fa-solid fa-cog mr-2"></i> Thiết Lập Bài Thi Thử
-        </button>
-      </div>
-    </div>
-  </main>
-
-  <!-- BẮT ĐẦU: GIAO DIỆN THIẾT LẬP ĐỀ THI ĐỘNG -->
-  <div id="exam-builder-view" class="hidden flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 bg-slate-50 font-sans rounded-xl shadow-sm border border-slate-200 mb-16 mt-6">
-    <div class="mb-8 flex items-center gap-4 border-b border-slate-200 pb-4">
-      <button onclick="goToHome()" class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-[#0f4c81] shadow hover:bg-slate-100 transition border border-slate-200">
-        <i class="fa-solid fa-arrow-left"></i>
-      </button>
-      <div>
-        <h2 class="text-2xl md:text-3xl font-bold text-slate-800">Thiết Lập Bài Thi ĐGNL</h2>
-        <p class="text-xs md:text-sm text-slate-500 mt-1">Tùy chỉnh thời lượng và điền số lượng câu hỏi chi tiết cho từng chuyên khoa.</p>
-      </div>
-    </div>
-
-    <div class="flex flex-col lg:flex-row gap-6">
-      <!-- CỘT TRÁI: BẢNG ĐIỀU KHIỂN CÀI ĐẶT -->
-      <aside class="w-full lg:w-1/3 flex flex-col gap-6">
-        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-          <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
-            <i class="fas fa-sliders-h text-[#0f4c81]"></i> Cấu hình đề thi
-          </h3>
-          
-          <!-- Chọn thời gian -->
-          <div class="mb-6">
-            <div class="flex justify-between items-end mb-2">
-              <label class="text-sm font-semibold text-slate-600">Thời gian làm bài</label>
-              <span class="text-xl font-bold text-[#0f4c81]"><span id="val-time">150</span> <span class="text-sm font-normal text-slate-500">phút</span></span>
-            </div>
-            <input type="range" id="slider-time" min="15" max="240" step="5" value="150" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#0f4c81]">
-            <div class="flex justify-between text-xs text-slate-400 mt-2">
-              <span>15p</span><span>240p</span>
-            </div>
-          </div>
-
-          <!-- Tổng số câu (Auto sum) -->
-          <div class="mb-4 pt-4 border-t border-slate-100">
-            <div class="flex justify-between items-center">
-              <label class="text-sm font-semibold text-slate-600">Tổng số câu hỏi:</label>
-              <span class="text-2xl font-bold text-rose-600"><span id="val-total-questions">0</span> <span class="text-sm font-normal text-slate-500">câu</span></span>
-            </div>
-            <p class="text-xs text-slate-400 mt-2 italic">* Số câu được cộng dồn từ các hệ cơ quan bạn điền ở cột bên phải. 100% câu hỏi thuộc bộ Vận Dụng Cao.</p>
-          </div>
-        </div>
-
-        <!-- Nút Bắt Đầu Thi -->
-        <button id="btn-generate-exam" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold text-lg py-4 rounded-xl shadow-lg transition-all transform hover:-translate-y-1 flex justify-center items-center gap-2 uppercase tracking-wider">
-          <i class="fa-solid fa-play mr-2"></i> BẮT ĐẦU THI
-        </button>
-      </aside>
-
-      <!-- CỘT PHẢI: LỰA CHỌN CHUYÊN KHOA VÀ VẤN ĐỀ -->
-      <main class="w-full lg:w-2/3 bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-          <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-            <i class="fas fa-layer-group text-[#0f4c81]"></i> Tùy chỉnh số lượng theo Hệ thống
-          </h3>
-          <button id="btn-toggle-all" class="text-sm font-semibold text-[#0f4c81] hover:text-blue-800 bg-blue-50 px-3 py-1.5 rounded-md border border-blue-200">
-            Bỏ chọn tất cả
-          </button>
-        </div>
-
-        <!-- Khung tìm kiếm -->
-        <div class="relative mb-6">
-          <input type="text" id="search-topic" placeholder="Tìm kiếm hệ cơ quan hoặc vấn đề (VD: Tim mạch, Vàng da...)" class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
-          <i class="fas fa-search text-slate-400 absolute left-4 top-3.5 text-lg"></i>
-        </div>
-
-        <!-- Lưới Chủ đề (Được render tự động bằng JS) -->
-        <div id="topics-grid" class="grid grid-cols-1 gap-4 h-[calc(100vh-320px)] min-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-        </div>
-      </main>
-    </div>
-  </div>
-  <!-- KẾT THÚC: GIAO DIỆN THIẾT LẬP ĐỀ THI ĐỘNG -->
-
-  
-  <!-- 2. GIAO DIỆN PHÒNG THI -->
-  <main id="exam-container" class="hidden flex-1 max-w-7xl w-full mx-auto p-3 md:p-4 grid grid-cols-1 lg:grid-cols-4 gap-4">
-    <section class="lg:col-span-3 flex flex-col space-y-4">
-      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 md:p-7 flex-1 flex flex-col justify-between">
-        <div>
-          <div class="flex justify-between items-center pb-3 mb-4 border-b border-slate-100">
-            <div class="flex items-center space-x-2">
-              <span id="q-index-label" class="font-bold text-base md:text-lg text-[#0f4c81]">Câu số 1:</span>
-              <span id="q-specialty-badge" class="text-xs px-2.5 py-0.5 rounded-full font-bold bg-slate-100 text-slate-700 border border-slate-200"></span>
-            </div>
-            <button onclick="toggleFlag()" id="flag-btn" class="text-xs font-semibold px-3 py-1.5 rounded-lg border flex items-center transition"></button>
-          </div>
-          <div id="content-display" class="text-sm md:text-base leading-relaxed text-slate-900 mb-4 bg-slate-50 p-4 md:p-5 rounded-xl border-l-4 border-[#0f4c81] whitespace-pre-line font-medium"></div>
-          <div id="image-box" class="hidden mb-6 p-2 bg-slate-100 rounded-xl border border-slate-200 text-center">
-            <div class="med-img-container inline-block max-w-full overflow-hidden rounded-lg shadow-sm border border-slate-300 bg-white" onclick="openLightbox()">
-              <img id="med-img" src="" alt="Hình ảnh y khoa" class="max-h-80 w-auto object-contain mx-auto hover:opacity-95 transition">
-            </div>
-          </div>
-          <div id="options-display" class="space-y-3 mb-6"></div>
-          <div id="rationale-box" class="hidden p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-sm mb-4">
-            <div class="font-bold text-emerald-900 mb-1 flex items-center"><i class="fa-solid fa-circle-check mr-2 text-emerald-600"></i> Giải thích:</div>
-            <p id="rationale-text" class="text-emerald-800 mb-2 leading-relaxed whitespace-pre-line"></p>
-            <div id="reference-display" class="text-xs text-slate-600 italic"></div>
-          </div>
-        </div>
-        <div class="pt-4 border-t border-slate-100 flex justify-between items-center">
-          <button onclick="prevQuestion()" id="prev-btn" class="px-4 py-2 border border-slate-300 rounded-lg text-sm font-medium hover:bg-slate-50 disabled:opacity-30">Câu trước</button>
-          <button onclick="nextQuestion()" id="next-btn" class="px-5 py-2 bg-[#0f4c81] text-white rounded-lg text-sm font-semibold hover:bg-[#145d9c]">Câu tiếp theo</button>
-        </div>
-      </div>
-    </section>
-
-    <aside class="lg:col-span-1 flex flex-col space-y-4">
-      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 flex flex-col h-full">
-        <h2 class="font-bold text-xs uppercase tracking-wider text-slate-500 mb-3 flex items-center"><i class="fa-solid fa-table-cells mr-2 text-[#0f4c81]"></i> Question Matrix</h2>
-        <div id="matrix-grid" class="flex-1 overflow-y-auto max-h-[380px] flex flex-wrap gap-2 content-start pr-1 mb-4"></div>
-        <button id="submit-btn" onclick="confirmSubmit()" class="w-full py-3 bg-red-600 text-white rounded-xl font-bold text-sm uppercase tracking-wider shadow-md">Nộp bài kiểm tra</button>
-      </div>
-    </aside>
-  </main>
-
-  <!-- 3. MÀN HÌNH KẾT QUẢ -->
-  <div id="result-view" class="hidden max-w-4xl w-full mx-auto p-4 flex-1">
-    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8">
-      <div class="text-center pb-6 border-b border-slate-100">
-        <div class="w-16 h-16 bg-blue-50 text-[#0f4c81] rounded-full flex items-center justify-center mx-auto mb-3 text-2xl font-bold"><i class="fa-solid fa-award"></i></div>
-        <h2 class="text-xl font-bold text-slate-900 uppercase">Kết Quả Đánh Giá Năng Lực</h2>
-      </div>
-      <div class="grid grid-cols-3 gap-4 my-6 text-center">
-        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
-          <div class="text-xs text-slate-500 uppercase font-semibold">Tổng câu đúng</div>
-          <div id="res-score" class="text-2xl font-bold text-[#0f4c81] mt-1">0/0</div>
-        </div>
-        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
-          <div class="text-xs text-slate-500 uppercase font-semibold">Tỷ lệ chính xác</div>
-          <div id="res-percent" class="text-2xl font-bold text-slate-800 mt-1">0%</div>
-        </div>
-        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
-          <div class="text-xs text-slate-500 uppercase font-semibold">Đánh giá</div>
-          <div id="res-status" class="text-base font-bold mt-2">--</div>
-        </div>
-      </div>
-      <div id="score-saving-msg" class="hidden text-center text-sm text-emerald-600 font-bold mb-4 animate-pulse"><i class="fa-solid fa-cloud-arrow-up"></i> Đang lưu điểm lên Bảng xếp hạng...</div>
-      <div class="mb-6"><h3 class="font-bold text-sm text-slate-700 mb-3 uppercase tracking-wide">Chi tiết năng lực theo hệ cơ quan:</h3><div id="res-specialties" class="space-y-2 text-xs"></div></div>
-      <div class="flex flex-col sm:flex-row gap-3 pt-4 border-t border-slate-100">
-        <button onclick="reviewAnswers()" class="flex-1 py-2.5 bg-[#0f4c81] text-white rounded-xl text-sm font-semibold hover:bg-[#145d9c]">Xem lại câu hỏi & Biện luận</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- 4. MÀN HÌNH BẢNG XẾP HẠNG GLOBAL -->
-  <main id="leaderboard-view" class="hidden flex-1 max-w-4xl w-full mx-auto p-4 md:p-8">
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-      <div class="bg-gradient-to-r from-amber-500 to-amber-600 p-6 text-center text-white relative">
-        <i class="fa-solid fa-trophy text-5xl mb-2 text-amber-200"></i>
-        <h2 class="text-2xl font-bold uppercase tracking-wide">Bảng Xếp Hạng Bài Thi 150 Câu</h2>
-        <p class="text-sm text-amber-100 mt-1">Xếp hạng dựa trên Điểm số và Thời gian làm bài</p>
-      </div>
-      <div class="p-6">
-        <div id="lb-loading" class="text-center py-6 text-slate-500">
-            <i class="fa-solid fa-circle-notch fa-spin text-2xl mb-2 text-amber-500"></i>
-            <p class="text-sm">Đang tải dữ liệu xếp hạng...</p>
-        </div>
-        <div class="overflow-x-auto hidden" id="lb-table-container">
-          <table class="w-full text-left border-collapse">
-            <thead>
-              <tr class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider border-b border-slate-200">
-                <th class="p-3 font-bold text-center w-16">Hạng</th>
-                <th class="p-3 font-bold">Thí sinh</th>
-                <th class="p-3 font-bold text-center">Điểm</th>
-                <th class="p-3 font-bold text-center">Tỷ lệ</th>
-                <th class="p-3 font-bold text-center">Thời gian</th>
-                <th class="p-3 font-bold text-right">Ngày thi</th>
-              </tr>
-            </thead>
-            <tbody id="leaderboard-body" class="text-sm"></tbody>
-          </table>
-        </div>
-        <div id="empty-leaderboard" class="hidden text-center py-8 text-slate-500 text-sm">Chưa có ai hoàn thành bài thi 150 câu. Hãy là người đầu tiên!</div>
-      </div>
-    </div>
-  </main>
-
-  <!-- MODAL ĐĂNG NHẬP / ĐĂNG KÝ -->
-  <div id="auth-modal" class="hidden fixed inset-0 z-[100] modal-backdrop flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-    <div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden modal-content relative">
-      <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 transition">
-        <i class="fa-solid fa-xmark text-xl"></i>
-      </button>
-      
-      <div class="p-6 pt-8">
-        <div class="text-center mb-6">
-          <div class="w-12 h-12 bg-blue-50 text-[#0f4c81] rounded-full flex items-center justify-center mx-auto mb-2 text-xl font-bold"><i class="fa-solid fa-user-doctor"></i></div>
-          <h2 id="auth-title" class="text-xl font-bold text-slate-800">Đăng nhập hệ thống</h2>
-        </div>
-
-        <form id="auth-form" onsubmit="handleAuth(event)" class="space-y-4">
-          <div>
-            <label class="block text-xs font-bold text-slate-600 mb-1">Tên đăng nhập</label>
-            <input type="text" id="auth-username" required class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-[#0f4c81] outline-none transition" placeholder="Nhập username...">
-          </div>
-          <div>
-            <label class="block text-xs font-bold text-slate-600 mb-1">Mật khẩu</label>
-            <input type="password" id="auth-password" required class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-[#0f4c81] outline-none transition" placeholder="••••••••">
-          </div>
-          
-          <div id="auth-error" class="hidden text-xs text-rose-600 font-medium text-center bg-rose-50 p-2 rounded"></div>
-          
-          <button type="submit" id="auth-submit-btn" class="w-full py-2.5 bg-[#0f4c81] hover:bg-[#145d9c] text-white rounded-lg font-bold text-sm shadow transition flex items-center justify-center">
-            <span>ĐĂNG NHẬP</span>
-          </button>
-        </form>
-        
-        <div class="mt-4 text-center text-xs text-slate-500">
-          <span id="auth-switch-text">Chưa có tài khoản?</span>
-          <button onclick="toggleAuthMode()" id="auth-switch-btn" class="text-[#0f4c81] font-bold hover:underline ml-1">Đăng ký ngay</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Lightbox Modal -->
-  <div id="lightbox-modal" class="hidden fixed inset-0 bg-black/90 z-50 flex flex-col items-center justify-center p-4" onclick="closeLightbox()">
-    <div class="absolute top-4 right-4 text-white text-2xl cursor-pointer hover:text-amber-400"><i class="fa-solid fa-xmark"></i></div>
-    <img id="lightbox-img" src="" alt="Ảnh phóng to" class="max-h-[90vh] max-w-[95vw] object-contain rounded shadow-2xl">
-  </div>
-
-  <script>
-    // =========================================================================
-    // DÁN LINK CSV XUẤT TỪ SHEET "CƠ BẢN" (Luyện tập) VÀO ĐÂY:
-    const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTZn-givAZO5QLXCt0UmSe25YTn477CbkQotFJ47ODyAq0YEmK8jTNbOxBGRmHBINuCI8rhbZZFejq-/pub?gid=0&single=true&output=csv";
-    
-    // DÁN LINK CSV XUẤT TỪ SHEET "VẬN DỤNG CAO" (Thi thử) VÀO ĐÂY:
-    const ADVANCED_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTZn-givAZO5QLXCt0UmSe25YTn477CbkQotFJ47ODyAq0YEmK8jTNbOxBGRmHBINuCI8rhbZZFejq-/pub?gid=998778799&single=true&output=csv"; 
 
     // DÁN URL GOOGLE APPS SCRIPT WEB APP (Làm Tài khoản & BXH) VÀO ĐÂY:
     const GAS_API_URL = "https://script.google.com/macros/s/AKfycbzB_qMY5R81I04Cw8CqhR7JZ4CFxfMrJnU5DiAmQmx9wicpOy_rZWIMWRSVs0HRjngeRg/exec";
     // =========================================================================
-
-    let EXAM_TIME_MINUTES = 150; 
 
     const OFFICIAL_TOPICS = [
       { name: "Hệ Miễn dịch (Vấn đề 1 - 5)" }, { name: "Hệ Máu - Lưới - Bạch huyết (Vấn đề 6 - 9)" },
@@ -511,21 +186,8 @@
         .then(data => {
             document.getElementById('lb-loading').classList.add('hidden');
             if (data.status === 'success' && data.data.length > 0) {
-                let filteredData = data.data.filter(r => parseInt(r.total) === 150);
-
-                if (filteredData.length > 0) {
-                    filteredData.sort((a, b) => {
-                        if (b.score !== a.score) return b.score - a.score;
-                        let timeA = a.timeTaken ? parseInt(a.timeTaken) : 999999;
-                        let timeB = b.timeTaken ? parseInt(b.timeTaken) : 999999;
-                        return timeA - timeB;
-                    });
-
-                    renderLeaderboard(filteredData);
-                    document.getElementById('lb-table-container').classList.remove('hidden');
-                } else {
-                    document.getElementById('empty-leaderboard').classList.remove('hidden');
-                }
+                renderLeaderboard(data.data);
+                document.getElementById('lb-table-container').classList.remove('hidden');
             } else {
                 document.getElementById('empty-leaderboard').classList.remove('hidden');
             }
@@ -545,7 +207,6 @@
             
             // Format ngày giờ Việt Nam
             const formattedDate = new Date(r.date).toLocaleString('vi-VN', {hour: '2-digit', minute:'2-digit', day: '2-digit', month: '2-digit', year: 'numeric'});
-            const timeStr = r.timeTaken ? `${Math.floor(r.timeTaken/60)}p ${r.timeTaken%60}s` : '--';
 
             return `
             <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
@@ -553,13 +214,12 @@
                 <td class="p-3 font-bold text-[#0f4c81]">${r.user}</td>
                 <td class="p-3 text-center">${r.score} / ${r.total}</td>
                 <td class="p-3 text-center font-bold ${r.pct >= 70 ? 'text-emerald-600' : 'text-rose-600'}">${r.pct}%</td>
-                <td class="p-3 text-center text-slate-600">${timeStr}</td>
                 <td class="p-3 text-right text-xs text-slate-500">${formattedDate}</td>
             </tr>
         `}).join('');
     }
 
-    function saveScore(score, total, pct, timeTaken) {
+    function saveScore(score, total, pct) {
         if (!currentUser) return; 
 
         const msgEl = document.getElementById('score-saving-msg');
@@ -572,7 +232,7 @@
         const dateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}T${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
 
         const queryParams = new URLSearchParams({
-            action: 'saveScore', user: currentUser, score: score, total: total, pct: pct, timeTaken: timeTaken, date: dateStr
+            action: 'saveScore', user: currentUser, score: score, total: total, pct: pct, date: dateStr
         }).toString();
 
         fetch(`${GAS_API_URL}?${queryParams}`, { method: 'POST' })
@@ -686,7 +346,6 @@ db.ref('online_sessions').on('value', (snapshot) => {
         Papa.parse(ADVANCED_SHEET_CSV_URL, {
             download: true, header: true, skipEmptyLines: true,
             complete: function(results) {
-                const validRows = results.data.filter(q => q.content && q.optA);
                 advancedQuestions = validRows;
                 document.getElementById('count-advanced').innerText = advancedQuestions.length;
                 document.getElementById('loading').classList.add('hidden');
@@ -710,14 +369,12 @@ db.ref('online_sessions').on('value', (snapshot) => {
       select.value = "ALL";
     }
 
-    function hideAllViews() {
         document.getElementById('home-dashboard').classList.add('hidden');
         document.getElementById('exam-container').classList.add('hidden');
         document.getElementById('result-view').classList.add('hidden');
         document.getElementById('leaderboard-view').classList.add('hidden');
         document.getElementById('timer-box').classList.add('hidden');
-        document.getElementById('exam-builder-view').classList.add('hidden');
-    }
+        
 
     function goToHome() {
       if (currentMode === 'exam' && timeRemaining > 0) {
@@ -727,15 +384,9 @@ db.ref('online_sessions').on('value', (snapshot) => {
       currentMode = 'home';
       hideAllViews();
       document.getElementById('home-dashboard').classList.remove('hidden');
-    }
+      
 
-    function showExamBuilder() {
-        hideAllViews();
-        document.getElementById('exam-builder-view').classList.remove('hidden');
-        document.getElementById('exam-builder-view').classList.add('flex', 'flex-col');
-    }
-
-    // Hàm xáo trộn thông minh: Giữ nguyên các câu hỏi chuỗi (Grouped Shuffle)
+        // Hàm xáo trộn thông minh: Giữ nguyên các câu hỏi chuỗi (Grouped Shuffle)
     function shuffleQuestions(questions) {
       let grouped = [];
       let i = 0;
@@ -745,22 +396,26 @@ db.ref('online_sessions').on('value', (snapshot) => {
         if (match) {
           let chainLength = parseInt(match[1], 10);
           let chain = [];
+          // Gom đủ số câu của chuỗi vào một nhóm
           for (let j = 0; j < chainLength && (i + j) < questions.length; j++) {
             chain.push(questions[i + j]);
           }
           grouped.push(chain);
           i += chainLength;
         } else {
+          // Câu hỏi đơn lẻ
           grouped.push([q]);
           i++;
         }
       }
 
+      // Xáo trộn các nhóm (Fisher-Yates)
       for (let idx = grouped.length - 1; idx > 0; idx--) {
         const jdx = Math.floor(Math.random() * (idx + 1));
         [grouped[idx], grouped[jdx]] = [grouped[jdx], grouped[idx]];
       }
 
+      // Trải phẳng mảng trở lại
       let result = [];
       grouped.forEach(group => {
         result.push(...group);
@@ -809,7 +464,9 @@ db.ref('online_sessions').on('value', (snapshot) => {
       const tM = text.match(/\[img:\s*(https?:\/\/[^\s\]]+)\s*\]/i);
       if (tM) { img = tM[1]; text = text.replace(tM[0], ''); }
       
+      // Ẩn mã [Chuoi...] khỏi màn hình hiển thị
       text = text.replace(/\[Chuoi\d+\]\\n/gi, '').replace(/\[Chuoi\d+\]/gi, ''); 
+      
       text = text.replaceAll(/\\n/g, '<br>').replaceAll('<br><br>', '<br>').trim();
 
       document.getElementById('content-display').innerHTML = text;
@@ -889,8 +546,6 @@ db.ref('online_sessions').on('value', (snapshot) => {
       hideAllViews();
       document.getElementById('result-view').classList.remove('hidden');
       
-      let timeTakenSeconds = (EXAM_TIME_MINUTES * 60) - timeRemaining;
-      
       let correct = 0;
       const bd = {};
       activeQuestions.forEach((q, i) => {
@@ -919,7 +574,7 @@ db.ref('online_sessions').on('value', (snapshot) => {
         </div>`;
       }).join('');
 
-      if (currentMode === 'exam') saveScore(correct, total, pct, timeTakenSeconds);
+      if (currentMode === 'exam') saveScore(correct, total, pct);
     }
 
     function reviewAnswers() {
@@ -940,124 +595,11 @@ db.ref('online_sessions').on('value', (snapshot) => {
 document.addEventListener("DOMContentLoaded", () => {
   const sliderTime = document.getElementById('slider-time');
   const valTime = document.getElementById('val-time');
+  const sliderQuestions = document.getElementById('slider-questions');
+  const valQuestions = document.getElementById('val-questions');
 
   if(sliderTime) sliderTime.addEventListener('input', (e) => valTime.textContent = e.target.value);
-
-  const topicsGrid = document.getElementById('topics-grid');
-  
-  if(topicsGrid && typeof OFFICIAL_TOPICS !== 'undefined') {
-    topicsGrid.innerHTML = ''; // Đảm bảo grid được xóa sạch trước khi vẽ
-    
-    OFFICIAL_TOPICS.forEach((topicGroup) => {
-      if(!topicGroup || !topicGroup.name || topicGroup.name.includes("Toàn bộ ngân hàng đề")) return;
-      
-      let fullGroupName = topicGroup.name;
-      let groupName = fullGroupName;
-      let issues = [];
-      
-      let match = fullGroupName.match(/(.+?)\s*\(\s*Vấn đề\s*(\d+)\s*[-–]\s*(\d+)\s*\)/i);
-      
-      if(match) {
-        groupName = match[1].trim();
-        let start = parseInt(match[2], 10);
-        let end = parseInt(match[3], 10);
-        for(let i = start; i <= end; i++) {
-          issues.push("Vấn đề " + i);
-        }
-      } else {
-        issues.push(fullGroupName);
-      }
-
-      // Tạo Container chính (topic-group)
-      const groupDiv = document.createElement('div');
-      groupDiv.className = "topic-group border border-slate-200 rounded-lg overflow-hidden flex flex-col";
-      groupDiv.setAttribute("data-group-name", groupName.toLowerCase());
-
-      // Tạo Header cho Group
-      const headerDiv = document.createElement('div');
-      headerDiv.className = "bg-slate-50 px-4 py-3 flex items-center justify-between border-b border-slate-200 gap-3";
-      
-      const labelDiv = document.createElement('label');
-      labelDiv.className = "flex items-center gap-3 font-semibold text-slate-700 cursor-pointer w-3/5";
-      
-      const chkGroup = document.createElement('input');
-      chkGroup.type = "checkbox";
-      chkGroup.className = "chk-group shrink-0 w-4 h-4 text-[#0f4c81] rounded accent-[#0f4c81]";
-      chkGroup.checked = true;
-      
-      const spanGroup = document.createElement('span');
-      spanGroup.className = "truncate";
-      spanGroup.innerText = fullGroupName;
-      
-      labelDiv.appendChild(chkGroup);
-      labelDiv.appendChild(spanGroup);
-      
-      const inputDiv = document.createElement('div');
-      inputDiv.className = "flex items-center gap-2 w-2/5 justify-end shrink-0";
-      
-      const spanInput = document.createElement('span');
-      spanInput.className = "text-xs text-slate-500 whitespace-nowrap hidden sm:block";
-      spanInput.innerText = "Số câu:";
-      
-      const inputQCount = document.createElement('input');
-      inputQCount.type = "number";
-      inputQCount.className = "sys-q-count w-16 px-2 py-1.5 text-sm font-bold border border-slate-300 rounded focus:outline-none focus:border-[#0f4c81] text-center text-[#0f4c81]";
-      inputQCount.min = "0";
-      inputQCount.value = "0";
-      
-      inputDiv.appendChild(spanInput);
-      inputDiv.appendChild(inputQCount);
-      
-      headerDiv.appendChild(labelDiv);
-      headerDiv.appendChild(inputDiv);
-      groupDiv.appendChild(headerDiv);
-
-      // Tạo Container cho Vấn đề (Issues)
-      const issuesDiv = document.createElement('div');
-      issuesDiv.className = "p-4 flex flex-col gap-2 flex-1";
-
-      issues.forEach(issue => {
-          const lbl = document.createElement('label');
-          lbl.className = "flex items-start gap-2 cursor-pointer group";
-          
-          const chkTopic = document.createElement('input');
-          chkTopic.type = "checkbox";
-          chkTopic.value = groupName + " (" + issue + ")";
-          chkTopic.className = "chk-topic mt-1 w-4 h-4 text-[#0f4c81] rounded accent-[#0f4c81]";
-          chkTopic.checked = true;
-          
-          const spanTopic = document.createElement('span');
-          spanTopic.className = "text-sm text-slate-600 group-hover:text-[#0f4c81]";
-          spanTopic.innerText = issue;
-          
-          lbl.appendChild(chkTopic);
-          lbl.appendChild(spanTopic);
-          issuesDiv.appendChild(lbl);
-      });
-
-      groupDiv.appendChild(issuesDiv);
-      topicsGrid.appendChild(groupDiv);
-    });
-  }
-
-  function updateTotalQuestions() {
-    let total = 0;
-    document.querySelectorAll('.sys-q-count').forEach(input => {
-        const group = input.closest('.topic-group');
-        const chk = group.querySelector('.chk-group');
-        if(chk.checked || chk.indeterminate) {
-            total += parseInt(input.value) || 0;
-        }
-    });
-    const totalEl = document.getElementById('val-total-questions');
-    if(totalEl) totalEl.textContent = total;
-  }
-
-  document.addEventListener('input', e => {
-      if(e.target.classList.contains('sys-q-count') || e.target.classList.contains('chk-group') || e.target.classList.contains('chk-topic')) {
-          updateTotalQuestions();
-      }
-  });
+  if(sliderQuestions) sliderQuestions.addEventListener('input', (e) => valQuestions.textContent = e.target.value);
 
   const btnToggleAll = document.getElementById('btn-toggle-all');
   let isAllChecked = true;
@@ -1068,7 +610,6 @@ document.addEventListener("DOMContentLoaded", () => {
       document.querySelectorAll('.chk-topic').forEach(chk => chk.checked = isAllChecked);
       document.querySelectorAll('.chk-group').forEach(chk => chk.checked = isAllChecked);
       btnToggleAll.textContent = isAllChecked ? "Bỏ chọn tất cả" : "Chọn tất cả";
-      updateTotalQuestions();
     });
   }
 
@@ -1109,7 +650,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 topicChk.parentElement.style.display = 'none';
             }
         });
-        group.style.display = hasMatch ? 'flex' : 'none';
+        group.style.display = hasMatch ? 'block' : 'none';
       });
     });
   }
@@ -1121,52 +662,50 @@ document.addEventListener("DOMContentLoaded", () => {
           alert("Lưu ý: Bạn đang thi ở chế độ Khách. Kết quả sẽ KHÔNG được lưu vào Bảng xếp hạng. Vui lòng đăng nhập ở màn hình chính!");
       }
 
-      const timeLimit = parseInt(sliderTime.value, 10);
-      let selectedQuestions = [];
-      let errorMsg = "";
+      const timeLimit = parseInt(sliderTime.value);
+      const questionLimit = parseInt(sliderQuestions.value);
+      const useBasic = document.getElementById('chk-basic').checked;
+      const useAdvanced = document.getElementById('chk-advanced').checked;
 
-      const sourceQuestions = (advancedQuestions && advancedQuestions.length > 0) ? advancedQuestions : basicQuestions;
-
-      document.querySelectorAll('.topic-group').forEach(group => {
-          const groupChk = group.querySelector('.chk-group');
-          if (groupChk.checked || groupChk.indeterminate) {
-              const groupNameOriginal = group.querySelector('.chk-group').nextSibling.textContent.trim();
-              const groupNameLower = group.getAttribute('data-group-name');
-              const qCount = parseInt(group.querySelector('.sys-q-count').value, 10) || 0;
-              
-              if (qCount > 0) {
-                  const checkedTopics = Array.from(group.querySelectorAll('.chk-topic:checked')).map(chk => chk.value.toLowerCase().trim());
-                  
-                  let sysQuestions = sourceQuestions.filter(q => {
-                      if(!q.specialty) return false;
-                      const qSys = q.specialty.split(' (')[0].trim().toLowerCase();
-                      return qSys === groupNameLower && checkedTopics.includes(q.specialty.toLowerCase().trim());
-                  });
-
-                  if (sysQuestions.length < qCount) {
-                      errorMsg += "\\n- " + groupNameOriginal + ": Bạn điền " + qCount + " câu, nhưng ngân hàng chỉ có " + sysQuestions.length + " câu phù hợp.";
-                  }
-
-                  let shuffled = shuffleQuestions(sysQuestions);
-                  selectedQuestions = selectedQuestions.concat(shuffled.slice(0, qCount));
-              }
-          }
+      const selectedTopics = [];
+      document.querySelectorAll('.chk-topic:checked').forEach(chk => {
+        let systemName = chk.value.split(' (')[0]; 
+        if(!selectedTopics.includes(systemName)) {
+            selectedTopics.push(systemName);
+        }
       });
 
-      if (errorMsg !== "") {
-          alert("LỖI: Không đủ câu hỏi trong ngân hàng!" + errorMsg + "\\n\\nVui lòng giảm số câu yêu cầu ở các hệ trên.");
+      if (selectedTopics.length === 0) {
+        alert("Vui lòng tick chọn ít nhất một chuyên khoa/vấn đề để tạo đề thi!");
+        return;
+      }
+      if (!useBasic && !useAdvanced) {
+        alert("Vui lòng chọn ít nhất một nguồn dữ liệu (Cơ bản hoặc Vận dụng cao)!");
+        return;
+      }
+
+      let sourceQuestions = [];
+      if(useBasic && typeof basicQuestions !== 'undefined') {
+          sourceQuestions = sourceQuestions.concat(basicQuestions);
+      }
+      if(useAdvanced && typeof advancedQuestions !== 'undefined') {
+          sourceQuestions = sourceQuestions.concat(advancedQuestions);
+      }
+      
+      let filteredQuestions = sourceQuestions.filter(q => {
+         if(!q.specialty) return false;
+         let qSys = q.specialty.split(' (')[0];
+         return selectedTopics.includes(qSys);
+      });
+      
+      if(filteredQuestions.length === 0) {
+          alert("Không tìm thấy câu hỏi nào thuộc các chủ đề bạn vừa chọn. Vui lòng tick chọn rộng hơn.");
           return;
       }
 
-      if (selectedQuestions.length === 0) {
-          alert("Vui lòng điền số câu hỏi lớn hơn 0 ở các hệ cơ quan bạn muốn thi!");
-          return;
-      }
-
-      activeQuestions = shuffleQuestions(selectedQuestions);
+      activeQuestions = shuffleQuestions(filteredQuestions).slice(0, questionLimit);
       
       currentMode = 'exam';
-      EXAM_TIME_MINUTES = timeLimit; 
       timeRemaining = timeLimit * 60;
       
       hideAllViews();
@@ -1189,7 +728,16 @@ document.addEventListener("DOMContentLoaded", () => {
       displayQuestion(currentIdx);
     });
   }
+
+// Thêm logic xử lý giao diện thanh trượt số lượng câu hỏi và cập nhật tạo đề thi
 });
+
 </script>
 </body>
+
+                  if (sysQuestions.length < qCount) {
+                      errorMsg += "\\n- " + groupNameOriginal + ": Bạn điền " + qCount + " câu, nhưng ngân hàng chỉ có " + sysQuestions.length + " câu phù hợp.";
+                  }
+          alert("LỖI: Không đủ câu hỏi trong ngân hàng!" + errorMsg + "\\n\\nVui lòng giảm số câu yêu cầu ở các hệ trên.");
 </html>
+
