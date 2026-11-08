@@ -170,7 +170,7 @@
       </button>
       <div>
         <h2 class="text-2xl md:text-3xl font-bold text-slate-800">Thiết Lập Bài Thi ĐGNL</h2>
-        <p class="text-xs md:text-sm text-slate-500 mt-1">Tùy chỉnh thời lượng, số lượng câu hỏi và chuyên khoa muốn tập trung ôn luyện.</p>
+        <p class="text-xs md:text-sm text-slate-500 mt-1">Tùy chỉnh thời lượng và điền số lượng câu hỏi chi tiết cho từng chuyên khoa.</p>
       </div>
     </div>
 
@@ -186,41 +186,24 @@
           <div class="mb-6">
             <div class="flex justify-between items-end mb-2">
               <label class="text-sm font-semibold text-slate-600">Thời gian làm bài</label>
-              <span class="text-xl font-bold text-[#0f4c81]"><span id="val-time">60</span> <span class="text-sm font-normal text-slate-500">phút</span></span>
+              <span class="text-xl font-bold text-[#0f4c81]"><span id="val-time">150</span> <span class="text-sm font-normal text-slate-500">phút</span></span>
             </div>
-            <input type="range" id="slider-time" min="15" max="180" step="5" value="60" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#0f4c81]">
+            <input type="range" id="slider-time" min="15" max="240" step="5" value="150" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#0f4c81]">
             <div class="flex justify-between text-xs text-slate-400 mt-2">
-              <span>15p</span><span>180p</span>
+              <span>15p</span><span>240p</span>
             </div>
           </div>
 
-          <!-- Chọn số lượng câu hỏi -->
-          <div class="mb-6">
-            <div class="flex justify-between items-end mb-2">
-              <label class="text-sm font-semibold text-slate-600">Số lượng câu hỏi</label>
-              <span class="text-xl font-bold text-[#0f4c81]"><span id="val-questions">90</span> <span class="text-sm font-normal text-slate-500">câu</span></span>
+          <!-- Tổng số câu (Auto sum) -->
+          <div class="mb-4 pt-4 border-t border-slate-100">
+            <div class="flex justify-between items-center">
+              <label class="text-sm font-semibold text-slate-600">Tổng số câu hỏi:</label>
+              <span class="text-2xl font-bold text-rose-600"><span id="val-total-questions">0</span> <span class="text-sm font-normal text-slate-500">câu</span></span>
             </div>
-            <input type="range" id="slider-questions" min="10" max="150" step="5" value="90" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#0f4c81]">
-            <div class="flex justify-between text-xs text-slate-400 mt-2">
-              <span>10</span><span>150</span>
-            </div>
-          </div>
-    <!-- Nguồn dữ liệu -->
-          <div>
-            <label class="text-sm font-semibold text-slate-600 mb-3 block">Nguồn dữ liệu (Độ khó)</label>
-            <div class="flex flex-col gap-3">
-              <label class="flex items-center gap-3 p-3 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-50 transition">
-                <input type="checkbox" id="chk-basic" checked class="w-5 h-5 text-[#0f4c81] rounded focus:ring-blue-500 accent-[#0f4c81]">
-                <span class="text-sm text-slate-700 font-medium">Luyện tập cơ bản </span>
-              </label>
-              <label class="flex items-center gap-3 p-3 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-50 transition">
-                <input type="checkbox" id="chk-advanced" checked class="w-5 h-5 text-[#0f4c81] rounded focus:ring-blue-500 accent-[#0f4c81]">
-                <span class="text-sm text-slate-700 font-medium">Vận dụng cao / Tình huống</span>
-              </label>
-            </div>
+            <p class="text-xs text-slate-400 mt-2 italic">* Số câu được cộng dồn từ các hệ cơ quan bạn điền ở cột bên phải. 100% câu hỏi thuộc bộ Vận Dụng Cao.</p>
           </div>
         </div>
-    
+
         <!-- Nút Bắt Đầu Thi -->
         <button id="btn-generate-exam" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold text-lg py-4 rounded-xl shadow-lg transition-all transform hover:-translate-y-1 flex justify-center items-center gap-2 uppercase tracking-wider">
           <i class="fa-solid fa-play mr-2"></i> BẮT ĐẦU THI
@@ -231,7 +214,7 @@
       <main class="w-full lg:w-2/3 bg-white p-6 rounded-xl shadow-sm border border-slate-200">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-            <i class="fas fa-layer-group text-[#0f4c81]"></i> Phạm vi kiến thức 
+            <i class="fas fa-layer-group text-[#0f4c81]"></i> Tùy chỉnh số lượng theo Hệ thống
           </h3>
           <button id="btn-toggle-all" class="text-sm font-semibold text-[#0f4c81] hover:text-blue-800 bg-blue-50 px-3 py-1.5 rounded-md border border-blue-200">
             Bỏ chọn tất cả
@@ -245,7 +228,7 @@
         </div>
 
         <!-- Lưới Chủ đề (Được render tự động bằng JS) -->
-        <div id="topics-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4 h-[calc(100vh-320px)] min-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+        <div id="topics-grid" class="grid grid-cols-1 gap-4 h-[calc(100vh-320px)] min-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
         </div>
       </main>
     </div>
@@ -328,8 +311,8 @@
     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
       <div class="bg-gradient-to-r from-amber-500 to-amber-600 p-6 text-center text-white relative">
         <i class="fa-solid fa-trophy text-5xl mb-2 text-amber-200"></i>
-        <h2 class="text-2xl font-bold uppercase tracking-wide">Bảng Xếp Hạng</h2>
-        <p class="text-sm text-amber-100 mt-1">Hệ thống đồng bộ dữ liệu thời gian thực</p>
+        <h2 class="text-2xl font-bold uppercase tracking-wide">Bảng Xếp Hạng Bài Thi 150 Câu</h2>
+        <p class="text-sm text-amber-100 mt-1">Xếp hạng dựa trên Điểm số và Thời gian làm bài</p>
       </div>
       <div class="p-6">
         <div id="lb-loading" class="text-center py-6 text-slate-500">
@@ -344,13 +327,14 @@
                 <th class="p-3 font-bold">Thí sinh</th>
                 <th class="p-3 font-bold text-center">Điểm</th>
                 <th class="p-3 font-bold text-center">Tỷ lệ</th>
+                <th class="p-3 font-bold text-center">Thời gian</th>
                 <th class="p-3 font-bold text-right">Ngày thi</th>
               </tr>
             </thead>
             <tbody id="leaderboard-body" class="text-sm"></tbody>
           </table>
         </div>
-        <div id="empty-leaderboard" class="hidden text-center py-8 text-slate-500 text-sm">Chưa có ai thi thử. Hãy là người đầu tiên!</div>
+        <div id="empty-leaderboard" class="hidden text-center py-8 text-slate-500 text-sm">Chưa có ai hoàn thành bài thi 150 câu. Hãy là người đầu tiên!</div>
       </div>
     </div>
   </main>
@@ -410,6 +394,8 @@
     // DÁN URL GOOGLE APPS SCRIPT WEB APP (Làm Tài khoản & BXH) VÀO ĐÂY:
     const GAS_API_URL = "https://script.google.com/macros/s/AKfycbzB_qMY5R81I04Cw8CqhR7JZ4CFxfMrJnU5DiAmQmx9wicpOy_rZWIMWRSVs0HRjngeRg/exec";
     // =========================================================================
+
+    let EXAM_TIME_MINUTES = 150; // Lưu thời gian bài thi để tính timeTaken
 
     const OFFICIAL_TOPICS = [
       { name: "Hệ Miễn dịch (Vấn đề 1 - 5)" }, { name: "Hệ Máu - Lưới - Bạch huyết (Vấn đề 6 - 9)" },
@@ -511,7 +497,7 @@
         goToHome();
     }
 
-    // BXH Tương tác API
+    // BXH Tương tác API (Lọc 150 câu, Xếp hạng theo điểm và thời gian)
     function showLeaderboard() {
         clearInterval(timerInterval);
         hideAllViews();
@@ -525,8 +511,23 @@
         .then(data => {
             document.getElementById('lb-loading').classList.add('hidden');
             if (data.status === 'success' && data.data.length > 0) {
-                renderLeaderboard(data.data);
-                document.getElementById('lb-table-container').classList.remove('hidden');
+                // 1. Chỉ lọc các bài thi có 150 câu
+                let filteredData = data.data.filter(r => parseInt(r.total) === 150);
+
+                if (filteredData.length > 0) {
+                    // 2. Xếp hạng: Điểm giảm dần -> Thời gian tăng dần
+                    filteredData.sort((a, b) => {
+                        if (b.score !== a.score) return b.score - a.score;
+                        let timeA = a.timeTaken ? parseInt(a.timeTaken) : 999999;
+                        let timeB = b.timeTaken ? parseInt(b.timeTaken) : 999999;
+                        return timeA - timeB;
+                    });
+
+                    renderLeaderboard(filteredData);
+                    document.getElementById('lb-table-container').classList.remove('hidden');
+                } else {
+                    document.getElementById('empty-leaderboard').classList.remove('hidden');
+                }
             } else {
                 document.getElementById('empty-leaderboard').classList.remove('hidden');
             }
@@ -544,8 +545,10 @@
             if(i === 1) rankBadge = '<i class="fa-solid fa-medal text-slate-400 text-lg"></i>';
             if(i === 2) rankBadge = '<i class="fa-solid fa-medal text-amber-700 text-lg"></i>';
             
-            // Format ngày giờ Việt Nam
             const formattedDate = new Date(r.date).toLocaleString('vi-VN', {hour: '2-digit', minute:'2-digit', day: '2-digit', month: '2-digit', year: 'numeric'});
+            
+            // Render thời gian (phút giây)
+            const timeStr = r.timeTaken ? `${Math.floor(r.timeTaken/60)}p ${r.timeTaken%60}s` : '--';
 
             return `
             <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
@@ -553,12 +556,13 @@
                 <td class="p-3 font-bold text-[#0f4c81]">${r.user}</td>
                 <td class="p-3 text-center">${r.score} / ${r.total}</td>
                 <td class="p-3 text-center font-bold ${r.pct >= 70 ? 'text-emerald-600' : 'text-rose-600'}">${r.pct}%</td>
+                <td class="p-3 text-center text-slate-600">${timeStr}</td>
                 <td class="p-3 text-right text-xs text-slate-500">${formattedDate}</td>
             </tr>
         `}).join('');
     }
 
-    function saveScore(score, total, pct) {
+    function saveScore(score, total, pct, timeTaken) {
         if (!currentUser) return; 
 
         const msgEl = document.getElementById('score-saving-msg');
@@ -570,8 +574,9 @@
         const now = new Date();
         const dateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}T${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
 
+        // Chú ý: Backend Google Apps Script của bạn CẦN cập nhật hàm saveScore để lưu thêm tham số timeTaken
         const queryParams = new URLSearchParams({
-            action: 'saveScore', user: currentUser, score: score, total: total, pct: pct, date: dateStr
+            action: 'saveScore', user: currentUser, score: score, total: total, pct: pct, timeTaken: timeTaken, date: dateStr
         }).toString();
 
         fetch(`${GAS_API_URL}?${queryParams}`, { method: 'POST' })
@@ -637,10 +642,7 @@ const connectedRef = db.ref('.info/connected');
 
 connectedRef.on('value', (snap) => {
   if (snap.val() === true) {
-    // Khi tab kết nối: ghi nhận online
     userSessionRef.set(true);
-
-    // Khi người dùng tắt tab hoặc mất mạng: tự động xóa
     userSessionRef.onDisconnect().remove();
   }
 });
@@ -659,22 +661,16 @@ db.ref('online_sessions').on('value', (snapshot) => {
           const validRows = results.data.filter(q => q.content && q.optA);
           if (validRows.length > 0) {
             allQuestions = validRows;
-            
-            // Gán dữ liệu Sheet Cơ bản
             basicQuestions = allQuestions; 
             document.getElementById('count-basic').innerText = basicQuestions.length;
-            
-            // Gọi hàm tải Sheet Vận Dụng Cao
             loadAdvancedQuestions();
           }
         }
       });
     }
 
-    // Hàm tải Sheet Vận Dụng Cao (Thi Thử)
     function loadAdvancedQuestions() {
         if (!ADVANCED_SHEET_CSV_URL || ADVANCED_SHEET_CSV_URL === "LINK_CSV_CUA_TRANG_TINH_VAN_DUNG_CAO") {
-            // Fallback nếu chưa cấu hình link
             advancedQuestions = [...basicQuestions];
             document.getElementById('count-advanced').innerText = "0 (Chưa đồng bộ)";
             document.getElementById('loading').classList.add('hidden');
@@ -715,7 +711,9 @@ db.ref('online_sessions').on('value', (snapshot) => {
         document.getElementById('result-view').classList.add('hidden');
         document.getElementById('leaderboard-view').classList.add('hidden');
         document.getElementById('timer-box').classList.add('hidden');
-        document.getElementById('exam-builder-view').classList.add('hidden');
+        
+        const builderView = document.getElementById('exam-builder-view');
+        if(builderView) builderView.classList.add('hidden');
     }
 
     function goToHome() {
@@ -727,14 +725,14 @@ db.ref('online_sessions').on('value', (snapshot) => {
       hideAllViews();
       document.getElementById('home-dashboard').classList.remove('hidden');
     }
-    
+
     function showExamBuilder() {
         hideAllViews();
         document.getElementById('exam-builder-view').classList.remove('hidden');
         document.getElementById('exam-builder-view').classList.add('flex', 'flex-col');
     }
 
-        // Hàm xáo trộn thông minh: Giữ nguyên các câu hỏi chuỗi (Grouped Shuffle)
+    // Hàm xáo trộn thông minh: Giữ nguyên các câu hỏi chuỗi (Grouped Shuffle)
     function shuffleQuestions(questions) {
       let grouped = [];
       let i = 0;
@@ -744,26 +742,22 @@ db.ref('online_sessions').on('value', (snapshot) => {
         if (match) {
           let chainLength = parseInt(match[1], 10);
           let chain = [];
-          // Gom đủ số câu của chuỗi vào một nhóm
           for (let j = 0; j < chainLength && (i + j) < questions.length; j++) {
             chain.push(questions[i + j]);
           }
           grouped.push(chain);
           i += chainLength;
         } else {
-          // Câu hỏi đơn lẻ
           grouped.push([q]);
           i++;
         }
       }
 
-      // Xáo trộn các nhóm (Fisher-Yates)
       for (let idx = grouped.length - 1; idx > 0; idx--) {
         const jdx = Math.floor(Math.random() * (idx + 1));
         [grouped[idx], grouped[jdx]] = [grouped[jdx], grouped[idx]];
       }
 
-      // Trải phẳng mảng trở lại
       let result = [];
       grouped.forEach(group => {
         result.push(...group);
@@ -812,9 +806,7 @@ db.ref('online_sessions').on('value', (snapshot) => {
       const tM = text.match(/\[img:\s*(https?:\/\/[^\s\]]+)\s*\]/i);
       if (tM) { img = tM[1]; text = text.replace(tM[0], ''); }
       
-      // Ẩn mã [Chuoi...] khỏi màn hình hiển thị
       text = text.replace(/\[Chuoi\d+\]\\n/gi, '').replace(/\[Chuoi\d+\]/gi, ''); 
-      
       text = text.replaceAll(/\\n/g, '<br>').replaceAll('<br><br>', '<br>').trim();
 
       document.getElementById('content-display').innerHTML = text;
@@ -894,6 +886,9 @@ db.ref('online_sessions').on('value', (snapshot) => {
       hideAllViews();
       document.getElementById('result-view').classList.remove('hidden');
       
+      // Tính toán thời gian đã làm (giây)
+      let timeTakenSeconds = (EXAM_TIME_MINUTES * 60) - timeRemaining;
+      
       let correct = 0;
       const bd = {};
       activeQuestions.forEach((q, i) => {
@@ -922,7 +917,7 @@ db.ref('online_sessions').on('value', (snapshot) => {
         </div>`;
       }).join('');
 
-      if (currentMode === 'exam') saveScore(correct, total, pct);
+      if (currentMode === 'exam') saveScore(correct, total, pct, timeTakenSeconds);
     }
 
     function reviewAnswers() {
@@ -943,11 +938,8 @@ db.ref('online_sessions').on('value', (snapshot) => {
 document.addEventListener("DOMContentLoaded", () => {
   const sliderTime = document.getElementById('slider-time');
   const valTime = document.getElementById('val-time');
-  const sliderQuestions = document.getElementById('slider-questions');
-  const valQuestions = document.getElementById('val-questions');
 
   if(sliderTime) sliderTime.addEventListener('input', (e) => valTime.textContent = e.target.value);
-  if(sliderQuestions) sliderQuestions.addEventListener('input', (e) => valQuestions.textContent = e.target.value);
 
   const topicsGrid = document.getElementById('topics-grid');
   if(topicsGrid && typeof OFFICIAL_TOPICS !== 'undefined') {
@@ -978,15 +970,19 @@ document.addEventListener("DOMContentLoaded", () => {
       `).join('');
 
       html += `
-        <div class="topic-group border border-slate-200 rounded-lg overflow-hidden" data-group-name="${groupName.toLowerCase()}">
-          <div class="bg-slate-50 px-4 py-3 flex items-center justify-between border-b border-slate-200">
-            <label class="flex items-center gap-3 font-semibold text-slate-700 cursor-pointer">
-              <input type="checkbox" class="chk-group w-4 h-4 text-[#0f4c81] rounded accent-[#0f4c81]" checked>
-              ${groupName}
+        <div class="topic-group border border-slate-200 rounded-lg overflow-hidden flex flex-col" data-group-name="${groupName.toLowerCase()}">
+          <!-- Thay đổi: Thêm ô Input số câu hỏi vào header của nhóm -->
+          <div class="bg-slate-50 px-4 py-3 flex items-center justify-between border-b border-slate-200 gap-3">
+            <label class="flex items-center gap-3 font-semibold text-slate-700 cursor-pointer w-3/5">
+              <input type="checkbox" class="chk-group shrink-0 w-4 h-4 text-[#0f4c81] rounded accent-[#0f4c81]" checked>
+              <span class="truncate">${groupName}</span>
             </label>
-            <span class="text-xs font-bold text-slate-400 bg-white px-2 py-1 rounded-full border border-slate-200">${issues.length} Vấn đề</span>
+            <div class="flex items-center gap-2 w-2/5 justify-end shrink-0">
+              <span class="text-xs text-slate-500 whitespace-nowrap hidden sm:block">Số câu:</span>
+              <input type="number" class="sys-q-count w-16 px-2 py-1.5 text-sm font-bold border border-slate-300 rounded focus:outline-none focus:border-blue-500 text-center text-[#0f4c81]" min="0" value="0">
+            </div>
           </div>
-          <div class="p-4 flex flex-col gap-2">
+          <div class="p-4 flex flex-col gap-2 flex-1">
             ${issuesHtml}
           </div>
         </div>
@@ -994,6 +990,27 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     topicsGrid.innerHTML = html;
   }
+
+  // Tự động tính tổng số câu hỏi từ các ô input
+  function updateTotalQuestions() {
+    let total = 0;
+    document.querySelectorAll('.sys-q-count').forEach(input => {
+        const group = input.closest('.topic-group');
+        const chk = group.querySelector('.chk-group');
+        if(chk.checked || chk.indeterminate) {
+            total += parseInt(input.value) || 0;
+        }
+    });
+    const totalEl = document.getElementById('val-total-questions');
+    if(totalEl) totalEl.textContent = total;
+  }
+
+  // Lắng nghe sự kiện thay đổi để cập nhật Tổng số câu
+  document.addEventListener('input', e => {
+      if(e.target.classList.contains('sys-q-count') || e.target.classList.contains('chk-group') || e.target.classList.contains('chk-topic')) {
+          updateTotalQuestions();
+      }
+  });
 
   const btnToggleAll = document.getElementById('btn-toggle-all');
   let isAllChecked = true;
@@ -1004,6 +1021,7 @@ document.addEventListener("DOMContentLoaded", () => {
       document.querySelectorAll('.chk-topic').forEach(chk => chk.checked = isAllChecked);
       document.querySelectorAll('.chk-group').forEach(chk => chk.checked = isAllChecked);
       btnToggleAll.textContent = isAllChecked ? "Bỏ chọn tất cả" : "Chọn tất cả";
+      updateTotalQuestions();
     });
   }
 
@@ -1044,7 +1062,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 topicChk.parentElement.style.display = 'none';
             }
         });
-        group.style.display = hasMatch ? 'block' : 'none';
+        group.style.display = hasMatch ? 'flex' : 'none';
       });
     });
   }
@@ -1057,49 +1075,57 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       const timeLimit = parseInt(sliderTime.value);
-      const questionLimit = parseInt(sliderQuestions.value);
-      const useBasic = document.getElementById('chk-basic').checked;
-      const useAdvanced = document.getElementById('chk-advanced').checked;
+      let selectedQuestions = [];
+      let errorMsg = "";
 
-      const selectedTopics = [];
-      document.querySelectorAll('.chk-topic:checked').forEach(chk => {
-        let systemName = chk.value.split(' (')[0]; 
-        if(!selectedTopics.includes(systemName)) {
-            selectedTopics.push(systemName);
-        }
+      // Nguồn mặc định 100% Vận dụng cao (hoặc fallback sang cơ bản nếu sheet vận dụng cao lỗi trống)
+      const sourceQuestions = (advancedQuestions && advancedQuestions.length > 0) ? advancedQuestions : basicQuestions;
+
+      document.querySelectorAll('.topic-group').forEach(group => {
+          const groupChk = group.querySelector('.chk-group');
+          if (groupChk.checked || groupChk.indeterminate) {
+              const groupNameOriginal = group.querySelector('.chk-group').nextSibling.textContent.trim();
+              const groupNameLower = group.getAttribute('data-group-name');
+              const qCount = parseInt(group.querySelector('.sys-q-count').value) || 0;
+              
+              if (qCount > 0) {
+                  // Lấy các vấn đề con được check
+                  const checkedTopics = Array.from(group.querySelectorAll('.chk-topic:checked')).map(chk => chk.value.toLowerCase().trim());
+                  
+                  // Lọc câu hỏi của riêng hệ này
+                  let sysQuestions = sourceQuestions.filter(q => {
+                      if(!q.specialty) return false;
+                      const qSys = q.specialty.split(' (')[0].trim().toLowerCase();
+                      return qSys === groupNameLower && checkedTopics.includes(q.specialty.toLowerCase().trim());
+                  });
+
+                  // Kiểm tra xem hệ thống có đủ số câu hỏi trong ngân hàng không
+                  if (sysQuestions.length < qCount) {
+                      errorMsg += `\n- ${groupNameOriginal}: Bạn điền ${qCount} câu, nhưng ngân hàng chỉ có ${sysQuestions.length} câu phù hợp.`;
+                  }
+
+                  // Trộn và lấy đủ số lượng yêu cầu
+                  let shuffled = shuffleQuestions(sysQuestions);
+                  selectedQuestions = selectedQuestions.concat(shuffled.slice(0, qCount));
+              }
+          }
       });
 
-      if (selectedTopics.length === 0) {
-        alert("Vui lòng tick chọn ít nhất một chuyên khoa/vấn đề để tạo đề thi!");
-        return;
-      }
-      if (!useBasic && !useAdvanced) {
-        alert("Vui lòng chọn ít nhất một nguồn dữ liệu (Cơ bản hoặc Vận dụng cao)!");
-        return;
-      }
-
-      let sourceQuestions = [];
-      if(useBasic && typeof basicQuestions !== 'undefined') {
-          sourceQuestions = sourceQuestions.concat(basicQuestions);
-      }
-      if(useAdvanced && typeof advancedQuestions !== 'undefined') {
-          sourceQuestions = sourceQuestions.concat(advancedQuestions);
-      }
-      
-      let filteredQuestions = sourceQuestions.filter(q => {
-         if(!q.specialty) return false;
-         let qSys = q.specialty.split(' (')[0];
-         return selectedTopics.includes(qSys);
-      });
-      
-      if(filteredQuestions.length === 0) {
-          alert("Không tìm thấy câu hỏi nào thuộc các chủ đề bạn vừa chọn. Vui lòng tick chọn rộng hơn.");
+      if (errorMsg !== "") {
+          alert("LỖI: Không đủ câu hỏi trong ngân hàng!" + errorMsg + "\n\nVui lòng giảm số câu yêu cầu ở các hệ trên.");
           return;
       }
 
-      activeQuestions = shuffleQuestions(filteredQuestions).slice(0, questionLimit);
+      if (selectedQuestions.length === 0) {
+          alert("Vui lòng điền số câu hỏi lớn hơn 0 ở các hệ cơ quan bạn muốn thi!");
+          return;
+      }
+
+      // Trộn toàn bộ đề một lần cuối cùng
+      activeQuestions = shuffleQuestions(selectedQuestions);
       
       currentMode = 'exam';
+      EXAM_TIME_MINUTES = timeLimit; // Lưu trữ cấu hình ban đầu
       timeRemaining = timeLimit * 60;
       
       hideAllViews();
@@ -1123,7 +1149,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
-
 </script>
 </body>
 </html>
