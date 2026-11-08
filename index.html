@@ -146,7 +146,7 @@
         </button>
       </div>      
       
-      <!-- Chế độ Thi Thử (Bộ Vận Dụng Cao) -->
+      <!-- Chế độ Thi Thử -->
       <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col justify-between hover:shadow-md transition relative overflow-hidden">
         <div>
           <div class="w-12 h-12 bg-rose-50 text-rose-600 rounded-xl flex items-center justify-center text-2xl font-bold mb-4">
@@ -543,6 +543,7 @@
             if(i === 1) rankBadge = '<i class="fa-solid fa-medal text-slate-400 text-lg"></i>';
             if(i === 2) rankBadge = '<i class="fa-solid fa-medal text-amber-700 text-lg"></i>';
             
+            // Format ngày giờ Việt Nam
             const formattedDate = new Date(r.date).toLocaleString('vi-VN', {hour: '2-digit', minute:'2-digit', day: '2-digit', month: '2-digit', year: 'numeric'});
             const timeStr = r.timeTaken ? `${Math.floor(r.timeTaken/60)}p ${r.timeTaken%60}s` : '--';
 
@@ -637,7 +638,10 @@ const connectedRef = db.ref('.info/connected');
 
 connectedRef.on('value', (snap) => {
   if (snap.val() === true) {
+    // Khi tab kết nối: ghi nhận online
     userSessionRef.set(true);
+
+    // Khi người dùng tắt tab hoặc mất mạng: tự động xóa
     userSessionRef.onDisconnect().remove();
   }
 });
@@ -656,16 +660,22 @@ db.ref('online_sessions').on('value', (snapshot) => {
           const validRows = results.data.filter(q => q.content && q.optA);
           if (validRows.length > 0) {
             allQuestions = validRows;
+            
+            // Gán dữ liệu Sheet Cơ bản
             basicQuestions = allQuestions; 
             document.getElementById('count-basic').innerText = basicQuestions.length;
+            
+            // Gọi hàm tải Sheet Vận Dụng Cao
             loadAdvancedQuestions();
           }
         }
       });
     }
 
+    // Hàm tải Sheet Vận Dụng Cao (Thi Thử)
     function loadAdvancedQuestions() {
         if (!ADVANCED_SHEET_CSV_URL || ADVANCED_SHEET_CSV_URL === "LINK_CSV_CUA_TRANG_TINH_VAN_DUNG_CAO") {
+            // Fallback nếu chưa cấu hình link
             advancedQuestions = [...basicQuestions];
             document.getElementById('count-advanced').innerText = "0 (Chưa đồng bộ)";
             document.getElementById('loading').classList.add('hidden');
@@ -725,6 +735,7 @@ db.ref('online_sessions').on('value', (snapshot) => {
         document.getElementById('exam-builder-view').classList.add('flex', 'flex-col');
     }
 
+    // Hàm xáo trộn thông minh: Giữ nguyên các câu hỏi chuỗi (Grouped Shuffle)
     function shuffleQuestions(questions) {
       let grouped = [];
       let i = 0;
@@ -758,6 +769,7 @@ db.ref('online_sessions').on('value', (snapshot) => {
     }
 
 
+    // CHẾ ĐỘ LUYỆN TẬP -> SỬ DỤNG BỘ CÂU HỎI CƠ BẢN
     function startPracticeMode() {
       currentMode = 'practice';
       const selected = document.getElementById('home-topic-select').value;
@@ -932,8 +944,10 @@ document.addEventListener("DOMContentLoaded", () => {
   if(sliderTime) sliderTime.addEventListener('input', (e) => valTime.textContent = e.target.value);
 
   const topicsGrid = document.getElementById('topics-grid');
+  
   if(topicsGrid && typeof OFFICIAL_TOPICS !== 'undefined') {
-    let html = '';
+    topicsGrid.innerHTML = ''; // Đảm bảo grid được xóa sạch trước khi vẽ
+    
     OFFICIAL_TOPICS.forEach((topicGroup) => {
       if(!topicGroup || !topicGroup.name || topicGroup.name.includes("Toàn bộ ngân hàng đề")) return;
       
@@ -941,7 +955,7 @@ document.addEventListener("DOMContentLoaded", () => {
       let groupName = fullGroupName;
       let issues = [];
       
-      let match = fullGroupName.match(/(.+?)\s*\(Vấn đề (\d+)\s*[-–]\s*(\d+)\)/);
+      let match = fullGroupName.match(/(.+?)\s*\(\s*Vấn đề\s*(\d+)\s*[-–]\s*(\d+)\s*\)/i);
       
       if(match) {
         groupName = match[1].trim();
@@ -954,31 +968,76 @@ document.addEventListener("DOMContentLoaded", () => {
         issues.push(fullGroupName);
       }
 
-      let issuesHtml = '';
+      // Tạo Container chính (topic-group)
+      const groupDiv = document.createElement('div');
+      groupDiv.className = "topic-group border border-slate-200 rounded-lg overflow-hidden flex flex-col";
+      groupDiv.setAttribute("data-group-name", groupName.toLowerCase());
+
+      // Tạo Header cho Group
+      const headerDiv = document.createElement('div');
+      headerDiv.className = "bg-slate-50 px-4 py-3 flex items-center justify-between border-b border-slate-200 gap-3";
+      
+      const labelDiv = document.createElement('label');
+      labelDiv.className = "flex items-center gap-3 font-semibold text-slate-700 cursor-pointer w-3/5";
+      
+      const chkGroup = document.createElement('input');
+      chkGroup.type = "checkbox";
+      chkGroup.className = "chk-group shrink-0 w-4 h-4 text-[#0f4c81] rounded accent-[#0f4c81]";
+      chkGroup.checked = true;
+      
+      const spanGroup = document.createElement('span');
+      spanGroup.className = "truncate";
+      spanGroup.innerText = fullGroupName;
+      
+      labelDiv.appendChild(chkGroup);
+      labelDiv.appendChild(spanGroup);
+      
+      const inputDiv = document.createElement('div');
+      inputDiv.className = "flex items-center gap-2 w-2/5 justify-end shrink-0";
+      
+      const spanInput = document.createElement('span');
+      spanInput.className = "text-xs text-slate-500 whitespace-nowrap hidden sm:block";
+      spanInput.innerText = "Số câu:";
+      
+      const inputQCount = document.createElement('input');
+      inputQCount.type = "number";
+      inputQCount.className = "sys-q-count w-16 px-2 py-1.5 text-sm font-bold border border-slate-300 rounded focus:outline-none focus:border-[#0f4c81] text-center text-[#0f4c81]";
+      inputQCount.min = "0";
+      inputQCount.value = "0";
+      
+      inputDiv.appendChild(spanInput);
+      inputDiv.appendChild(inputQCount);
+      
+      headerDiv.appendChild(labelDiv);
+      headerDiv.appendChild(inputDiv);
+      groupDiv.appendChild(headerDiv);
+
+      // Tạo Container cho Vấn đề (Issues)
+      const issuesDiv = document.createElement('div');
+      issuesDiv.className = "p-4 flex flex-col gap-2 flex-1";
+
       issues.forEach(issue => {
-          issuesHtml += '<label class="flex items-start gap-2 cursor-pointer group">' +
-            '<input type="checkbox" value="' + groupName + ' (' + issue + ')" class="chk-topic mt-1 w-4 h-4 text-[#0f4c81] rounded accent-[#0f4c81]" checked>' +
-            '<span class="text-sm text-slate-600 group-hover:text-[#0f4c81]">' + issue + '</span>' +
-          '</label>';
+          const lbl = document.createElement('label');
+          lbl.className = "flex items-start gap-2 cursor-pointer group";
+          
+          const chkTopic = document.createElement('input');
+          chkTopic.type = "checkbox";
+          chkTopic.value = groupName + " (" + issue + ")";
+          chkTopic.className = "chk-topic mt-1 w-4 h-4 text-[#0f4c81] rounded accent-[#0f4c81]";
+          chkTopic.checked = true;
+          
+          const spanTopic = document.createElement('span');
+          spanTopic.className = "text-sm text-slate-600 group-hover:text-[#0f4c81]";
+          spanTopic.innerText = issue;
+          
+          lbl.appendChild(chkTopic);
+          lbl.appendChild(spanTopic);
+          issuesDiv.appendChild(lbl);
       });
 
-      html += '<div class="topic-group border border-slate-200 rounded-lg overflow-hidden flex flex-col" data-group-name="' + groupName.toLowerCase() + '">' +
-          '<div class="bg-slate-50 px-4 py-3 flex items-center justify-between border-b border-slate-200 gap-3">' +
-            '<label class="flex items-center gap-3 font-semibold text-slate-700 cursor-pointer w-3/5">' +
-              '<input type="checkbox" class="chk-group shrink-0 w-4 h-4 text-[#0f4c81] rounded accent-[#0f4c81]" checked>' +
-              '<span class="truncate">' + fullGroupName + '</span>' +
-            '</label>' +
-            '<div class="flex items-center gap-2 w-2/5 justify-end shrink-0">' +
-              '<span class="text-xs text-slate-500 whitespace-nowrap hidden sm:block">Số câu:</span>' +
-              '<input type="number" class="sys-q-count w-16 px-2 py-1.5 text-sm font-bold border border-slate-300 rounded focus:outline-none focus:border-[#0f4c81] text-center text-[#0f4c81]" min="0" value="0">' +
-            '</div>' +
-          '</div>' +
-          '<div class="p-4 flex flex-col gap-2 flex-1">' +
-            issuesHtml +
-          '</div>' +
-        '</div>';
+      groupDiv.appendChild(issuesDiv);
+      topicsGrid.appendChild(groupDiv);
     });
-    topicsGrid.innerHTML = html;
   }
 
   function updateTotalQuestions() {
