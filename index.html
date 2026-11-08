@@ -678,7 +678,7 @@ db.ref('online_sessions').on('value', (snapshot) => {
 
     // Hàm tải Sheet Vận Dụng Cao (Thi Thử)
     function loadAdvancedQuestions() {
-        if (!ADVANCED_SHEET_CSV_URL || ADVANCED_SHEET_CSV_URL === "LINK_CSV_CUA_TRANG_TINH_VAN_DUNG_CAO") {
+        if (!ADVANCED_SHEET_CSV_URL || ADVANCED_SHEET_CSV_URL === "https://docs.google.com/spreadsheets/d/e/2PACX-1vTZn-givAZO5QLXCt0UmSe25YTn477CbkQotFJ47ODyAq0YEmK8jTNbOxBGRmHBINuCI8rhbZZFejq-/pub?output=csv") {
             // Fallback nếu chưa cấu hình link
             advancedQuestions = [...basicQuestions];
             document.getElementById('count-advanced').innerText = "0 (Chưa đồng bộ)";
