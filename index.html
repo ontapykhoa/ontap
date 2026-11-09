@@ -41,7 +41,12 @@
         </div>
       </div>
 
-      <div class="flex items-center space-x-3">
+      <div class="flex items-center space-x-2 md:space-x-3">
+        <!-- Nút Ôn tập: Chỉ hiển thị sau khi đăng nhập -->
+        <button id="study-nav-btn" onclick="showStudyView()" class="hidden bg-emerald-600 hover:bg-emerald-700 border border-emerald-400/50 px-3.5 py-1.5 rounded-lg text-xs font-bold items-center shadow-sm transition">
+          <i class="fa-solid fa-graduation-cap mr-1.5 text-amber-300"></i> Ôn tập
+        </button>
+
         <button onclick="showLeaderboard()" class="bg-[#1b629e] hover:bg-[#165083] border border-blue-300/40 px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center shadow-sm transition">
           <i class="fa-solid fa-trophy mr-1.5 text-amber-300"></i> BXH
         </button>
@@ -124,6 +129,23 @@
           <div id="stat-total-visits" class="text-xl font-extrabold text-slate-800 font-mono mt-0.5">--</div>
         </div>
       </div>
+    </div>
+
+    <!-- Thẻ truy cập nhanh Ôn Tập (Chỉ hiển thị sau khi đăng nhập) -->
+    <div id="home-study-card" class="hidden bg-gradient-to-r from-emerald-600 to-teal-700 text-white rounded-2xl p-5 md:p-6 shadow-md mb-6 flex-col sm:flex-row sm:items-center justify-between gap-4 border border-emerald-400/30">
+      <div class="flex items-start sm:items-center gap-4">
+        <div class="w-12 h-12 bg-white/15 rounded-xl flex items-center justify-center text-2xl text-amber-300 shrink-0">
+          <i class="fa-solid fa-graduation-cap"></i>
+        </div>
+        <div>
+          <span class="inline-block text-[10px] font-bold uppercase tracking-wider bg-amber-400 text-[#0f4c81] px-2 py-0.5 rounded mb-1">Dành cho thành viên</span>
+          <h3 class="text-lg font-bold">Kho Ôn Tập Video Bài Giảng & Tài Liệu ĐGNL</h3>
+          <p class="text-xs text-emerald-100 mt-0.5">Xem video hệ thống kiến thức lâm sàng và mở khóa tài liệu học tập bằng mã Pass cá nhân.</p>
+        </div>
+      </div>
+      <button onclick="showStudyView()" class="px-5 py-3 bg-white hover:bg-amber-50 text-emerald-800 font-bold text-xs uppercase tracking-wider rounded-xl shadow transition flex items-center justify-center shrink-0">
+        <i class="fa-solid fa-circle-play mr-2 text-emerald-600"></i> Vào Khu Ôn Tập
+      </button>
     </div>
 
     <!-- Hai Phân Hệ -->
@@ -344,6 +366,65 @@
     </div>
   </main>
 
+  <!-- 5. MÀN HÌNH ÔN TẬP (VIDEO BÀI GIẢNG & TÀI LIỆU MỞ KHÓA BẰNG PASS) -->
+  <main id="study-view" class="hidden flex-1 max-w-6xl w-full mx-auto p-4 md:p-8">
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+      <!-- Banner đầu trang Ôn tập & Ô nhập Pass -->
+      <div class="bg-gradient-to-r from-[#0f4c81] to-emerald-700 p-6 text-white flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <div class="flex items-start gap-3.5">
+          <button onclick="goToHome()" class="w-9 h-9 bg-white/15 hover:bg-white/25 rounded-full flex items-center justify-center text-white transition shrink-0 mt-0.5" title="Quay lại Trang chủ">
+            <i class="fa-solid fa-arrow-left"></i>
+          </button>
+          <div>
+            <h2 class="text-xl md:text-2xl font-bold flex items-center gap-2">
+              <i class="fa-solid fa-circle-play text-amber-300"></i> Kho Video Bài Giảng & Tài Liệu
+            </h2>
+            <p class="text-xs md:text-sm text-blue-100 mt-1">
+              Mỗi mã Pass chỉ kích hoạt duy nhất cho <strong>1 tài khoản</strong>. Sau khi mở khóa, tài khoản của bạn sẽ truy cập vĩnh viễn mọi lúc.
+            </p>
+          </div>
+        </div>
+
+        <!-- Khung nhập Pass mở khóa tài liệu -->
+        <div id="unlock-box" class="bg-white/10 backdrop-blur-sm p-3 rounded-xl border border-white/20 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 shrink-0">
+          <input type="text" id="study-pass-input" onkeydown="if(event.key==='Enter') submitStudyPass()" placeholder="Nhập mã Pass tài liệu..." class="bg-white text-slate-800 text-xs font-semibold px-3.5 py-2.5 rounded-lg outline-none w-full sm:w-48 focus:ring-2 focus:ring-amber-400">
+          <button onclick="submitStudyPass()" id="btn-unlock-docs" class="bg-amber-500 hover:bg-amber-600 text-[#0f4c81] font-bold text-xs px-4 py-2.5 rounded-lg shadow transition whitespace-nowrap flex items-center justify-center">
+            <i class="fa-solid fa-key mr-1.5"></i> Mở khóa tài liệu
+          </button>
+        </div>
+
+        <!-- Huy hiệu trạng thái đã mở khóa -->
+        <div id="unlocked-badge" class="hidden bg-emerald-500/25 border border-emerald-300/50 px-4 py-2.5 rounded-xl text-xs font-bold text-white flex items-center gap-2 shrink-0">
+          <i class="fa-solid fa-lock-open text-amber-300 text-sm"></i>
+          <span>Tài khoản đã mở khóa toàn bộ tài liệu</span>
+        </div>
+      </div>
+
+      <!-- Thanh tìm kiếm & Lọc chuyên khoa trong khu Ôn tập -->
+      <div class="p-6 pb-0 flex flex-col sm:flex-row gap-3">
+        <div class="relative flex-1">
+          <input type="text" id="study-search-input" oninput="filterStudyMaterials()" placeholder="Tìm kiếm tên bài giảng hoặc chủ đề..." class="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs md:text-sm focus:outline-none focus:border-[#0f4c81]">
+          <i class="fa-solid fa-search text-slate-400 absolute left-3.5 top-3 text-sm"></i>
+        </div>
+        <select id="study-specialty-filter" onchange="filterStudyMaterials()" class="bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs md:text-sm font-medium text-slate-700 outline-none focus:border-[#0f4c81] sm:w-64">
+          <option value="ALL">Tất cả chuyên khoa / hệ cơ quan</option>
+        </select>
+      </div>
+
+      <!-- Danh sách bài giảng -->
+      <div class="p-6">
+        <div id="study-loading" class="text-center py-12 text-slate-500">
+          <i class="fa-solid fa-circle-notch fa-spin text-3xl text-[#0f4c81] mb-2"></i>
+          <p class="text-sm">Đang tải danh sách bài giảng...</p>
+        </div>
+        <div id="study-empty" class="hidden text-center py-12 text-slate-500 text-sm">
+          Không tìm thấy bài giảng phù hợp.
+        </div>
+        <div id="study-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+      </div>
+    </div>
+  </main>
+
   <!-- MODAL ĐĂNG NHẬP / ĐĂNG KÝ -->
   <div id="auth-modal" class="hidden fixed inset-0 z-[100] modal-backdrop flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
     <div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden modal-content relative">
@@ -382,6 +463,24 @@
     </div>
   </div>
 
+  <!-- MODAL PHÁT VIDEO BÀI GIẢNG -->
+  <div id="video-modal" class="hidden fixed inset-0 z-[100] modal-backdrop bg-black/85 backdrop-blur-sm flex items-center justify-center p-4" onclick="closeVideoModal()">
+    <div class="bg-slate-900 w-full max-w-4xl rounded-2xl overflow-hidden shadow-2xl border border-slate-700 modal-content" onclick="event.stopPropagation()">
+      <div class="flex justify-between items-center px-5 py-3.5 bg-slate-800 text-white border-b border-slate-700">
+        <div class="flex items-center gap-2.5 truncate pr-4">
+          <i class="fa-solid fa-circle-play text-amber-400"></i>
+          <h3 id="video-modal-title" class="text-sm font-bold truncate">Video bài giảng</h3>
+        </div>
+        <button onclick="closeVideoModal()" class="text-slate-400 hover:text-white transition">
+          <i class="fa-solid fa-xmark text-xl"></i>
+        </button>
+      </div>
+      <div class="aspect-video w-full bg-black">
+        <iframe id="video-iframe" class="w-full h-full" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+    </div>
+  </div>
+
   <!-- Lightbox Modal -->
   <div id="lightbox-modal" class="hidden fixed inset-0 bg-black/90 z-50 flex flex-col items-center justify-center p-4" onclick="closeLightbox()">
     <div class="absolute top-4 right-4 text-white text-2xl cursor-pointer hover:text-amber-400"><i class="fa-solid fa-xmark"></i></div>
@@ -396,7 +495,7 @@
     // DÁN LINK CSV XUẤT TỪ SHEET "VẬN DỤNG CAO" (Thi thử) VÀO ĐÂY:
     const ADVANCED_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTZn-givAZO5QLXCt0UmSe25YTn477CbkQotFJ47ODyAq0YEmK8jTNbOxBGRmHBINuCI8rhbZZFejq-/pub?gid=998778799&single=true&output=csv"; 
 
-    // DÁN URL GOOGLE APPS SCRIPT WEB APP (Làm Tài khoản & BXH) VÀO ĐÂY:
+    // DÁN URL GOOGLE APPS SCRIPT WEB APP (Làm Tài khoản, BXH & Ôn tập) VÀO ĐÂY:
     const GAS_API_URL = "https://script.google.com/macros/s/AKfycbzB_qMY5R81I04Cw8CqhR7JZ4CFxfMrJnU5DiAmQmx9wicpOy_rZWIMWRSVs0HRjngeRg/exec";
     // =========================================================================
 
@@ -422,16 +521,50 @@
     let currentUser = localStorage.getItem('medpass_current_user') || null;
     let authMode = 'login'; 
 
+    // Study Materials State
+    let studyMaterials = [];
+    let isStudyUnlocked = false;
+
+    function escapeHtml(str) {
+      return String(str || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
     function initAuth() {
+        const studyNavBtn = document.getElementById('study-nav-btn');
+        const homeStudyCard = document.getElementById('home-study-card');
+
         if (currentUser) {
             document.getElementById('login-nav-btn').classList.add('hidden');
             document.getElementById('user-menu').classList.remove('hidden');
             document.getElementById('user-menu').classList.add('flex');
             document.getElementById('current-username').innerText = currentUser;
+
+            if (studyNavBtn) {
+              studyNavBtn.classList.remove('hidden');
+              studyNavBtn.classList.add('flex');
+            }
+            if (homeStudyCard) {
+              homeStudyCard.classList.remove('hidden');
+              homeStudyCard.classList.add('flex');
+            }
         } else {
             document.getElementById('login-nav-btn').classList.remove('hidden');
             document.getElementById('user-menu').classList.add('hidden');
             document.getElementById('user-menu').classList.remove('flex');
+
+            if (studyNavBtn) {
+              studyNavBtn.classList.add('hidden');
+              studyNavBtn.classList.remove('flex');
+            }
+            if (homeStudyCard) {
+              homeStudyCard.classList.add('hidden');
+              homeStudyCard.classList.remove('flex');
+            }
         }
     }
 
@@ -497,9 +630,218 @@
 
     function logout() {
         currentUser = null;
+        studyMaterials = [];
+        isStudyUnlocked = false;
         localStorage.removeItem('medpass_current_user');
         initAuth();
         goToHome();
+    }
+
+    // =========================================================================
+    // KHU VỰC ÔN TẬP (VIDEO BÀI GIẢNG & TÀI LIỆU MỞ KHÓA PASS 1-1)
+    // =========================================================================
+    function showStudyView() {
+      if (!currentUser) {
+        openAuthModal();
+        return;
+      }
+      if (currentMode === 'exam' && timeRemaining > 0) {
+        if (!confirm("Đang thi thử. Chuyển sang Ôn tập sẽ hủy kết quả bài thi?")) return;
+      }
+      clearInterval(timerInterval);
+      currentMode = 'study';
+      hideAllViews();
+      document.getElementById('study-view').classList.remove('hidden');
+      loadStudyMaterials();
+    }
+
+    function loadStudyMaterials() {
+      const listEl = document.getElementById('study-list');
+      const loadingEl = document.getElementById('study-loading');
+      const emptyEl = document.getElementById('study-empty');
+      
+      listEl.innerHTML = '';
+      emptyEl.classList.add('hidden');
+      loadingEl.classList.remove('hidden');
+
+      const params = new URLSearchParams({ action: 'getStudyMaterials', user: currentUser }).toString();
+      fetch(`${GAS_API_URL}?${params}`, { method: 'POST' })
+        .then(res => res.json())
+        .then(res => {
+          loadingEl.classList.add('hidden');
+          if (res.status !== 'success') {
+            listEl.innerHTML = `<div class="col-span-full text-center text-rose-500 text-sm py-6">${escapeHtml(res.message)}</div>`;
+            return;
+          }
+
+          isStudyUnlocked = Boolean(res.unlocked);
+          studyMaterials = Array.isArray(res.data) ? res.data : [];
+
+          // Cập nhật trạng thái ổ khóa trên giao diện
+          if (isStudyUnlocked) {
+            document.getElementById('unlock-box').classList.add('hidden');
+            document.getElementById('unlocked-badge').classList.remove('hidden');
+          } else {
+            document.getElementById('unlock-box').classList.remove('hidden');
+            document.getElementById('unlocked-badge').classList.add('hidden');
+          }
+
+          // Tạo danh sách lọc chuyên khoa tự động từ dữ liệu sheet OnTap
+          const filterSelect = document.getElementById('study-specialty-filter');
+          const currentFilter = filterSelect.value;
+          const specialties = [...new Set(studyMaterials.map(m => (m.specialty || "Chung").trim()))];
+          filterSelect.innerHTML = '<option value="ALL">Tất cả chuyên khoa / hệ cơ quan</option>' +
+            specialties.map(sp => `<option value="${escapeHtml(sp)}">${escapeHtml(sp)}</option>`).join('');
+          if (specialties.includes(currentFilter)) filterSelect.value = currentFilter;
+
+          filterStudyMaterials();
+        })
+        .catch(() => {
+          loadingEl.classList.add('hidden');
+          listEl.innerHTML = '<div class="col-span-full text-center text-rose-500 text-sm py-6">Lỗi kết nối máy chủ. Không thể tải danh sách bài giảng.</div>';
+        });
+    }
+
+    function filterStudyMaterials() {
+      const keyword = (document.getElementById('study-search-input').value || "").toLowerCase().trim();
+      const selectedSp = document.getElementById('study-specialty-filter').value;
+
+      const filtered = studyMaterials.filter(item => {
+        const sp = (item.specialty || "Chung").trim();
+        const title = (item.title || "").toLowerCase();
+        const matchSp = (selectedSp === "ALL") || (sp === selectedSp);
+        const matchText = !keyword || title.includes(keyword) || sp.toLowerCase().includes(keyword);
+        return matchSp && matchText;
+      });
+
+      renderStudyMaterials(filtered);
+    }
+
+    function renderStudyMaterials(items) {
+      const listEl = document.getElementById('study-list');
+      const emptyEl = document.getElementById('study-empty');
+
+      if (!items || items.length === 0) {
+        listEl.innerHTML = '';
+        emptyEl.classList.remove('hidden');
+        return;
+      }
+
+      emptyEl.classList.add('hidden');
+      listEl.innerHTML = items.map(item => {
+        const masterIndex = studyMaterials.indexOf(item);
+        const hasVideo = Boolean(item.videoUrl && item.videoUrl.trim());
+        const hasDoc = Boolean(item.docUrl && item.docUrl.trim());
+
+        const videoButton = hasVideo
+          ? `<button onclick="openVideoModalByIndex(${masterIndex})" class="flex-1 py-2.5 px-3 bg-[#0f4c81] hover:bg-[#145d9c] text-white rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition">
+               <i class="fa-solid fa-play"></i> Xem Video
+             </button>`
+          : `<span class="flex-1 py-2.5 px-3 bg-slate-100 text-slate-400 rounded-lg text-xs font-medium text-center">Chưa có video</span>`;
+
+        let docButton = '';
+        if (hasDoc) {
+          docButton = `<a href="${escapeHtml(item.docUrl)}" target="_blank" rel="noopener noreferrer" class="flex-1 py-2.5 px-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition">
+               <i class="fa-solid fa-file-arrow-down"></i> Mở tài liệu
+             </a>`;
+        } else if (isStudyUnlocked) {
+          docButton = `<span class="flex-1 py-2.5 px-3 bg-slate-100 text-slate-400 rounded-lg text-xs font-medium text-center">Chưa có tài liệu</span>`;
+        } else {
+          docButton = `<button onclick="promptFocusPass()" class="flex-1 py-2.5 px-3 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition" title="Nhập mã Pass ở thanh phía trên để mở khóa">
+               <i class="fa-solid fa-lock text-amber-600"></i> Cần nhập Pass
+             </button>`;
+        }
+
+        return `
+          <div class="border border-slate-200 rounded-xl p-4 hover:shadow-md hover:border-blue-300 transition flex flex-col justify-between bg-slate-50/60">
+            <div>
+              <span class="inline-block text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-blue-100 text-[#0f4c81] mb-2">
+                ${escapeHtml(item.specialty || "Chung")}
+              </span>
+              <h4 class="font-bold text-sm text-slate-800 mb-4 leading-snug">
+                ${escapeHtml(item.title)}
+              </h4>
+            </div>
+            <div class="flex items-center gap-2 pt-3 border-t border-slate-200/80">
+              ${videoButton}
+              ${docButton}
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    function promptFocusPass() {
+      const input = document.getElementById('study-pass-input');
+      if (input) {
+        input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        input.focus();
+      }
+    }
+
+    function submitStudyPass() {
+      if (!currentUser) return openAuthModal();
+      const inputEl = document.getElementById('study-pass-input');
+      const pass = inputEl.value.trim();
+      if (!pass) {
+        alert("Vui lòng nhập mã Pass!");
+        inputEl.focus();
+        return;
+      }
+
+      const btn = document.getElementById('btn-unlock-docs');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin mr-1"></i> Đang kiểm tra...';
+
+      const params = new URLSearchParams({ action: 'unlockDocs', user: currentUser, pass: pass }).toString();
+      fetch(`${GAS_API_URL}?${params}`, { method: 'POST' })
+        .then(res => res.json())
+        .then(data => {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fa-solid fa-key mr-1.5"></i> Mở khóa tài liệu';
+          if (data.status === 'success') {
+            alert(data.message);
+            inputEl.value = '';
+            loadStudyMaterials();
+          } else {
+            alert(data.message || "Mã Pass không hợp lệ!");
+          }
+        })
+        .catch(() => {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fa-solid fa-key mr-1.5"></i> Mở khóa tài liệu';
+          alert("Lỗi kết nối máy chủ. Vui lòng thử lại!");
+        });
+    }
+
+    function openVideoModalByIndex(idx) {
+      const item = studyMaterials[idx];
+      if (!item || !item.videoUrl) return;
+      const url = item.videoUrl.trim();
+      document.getElementById('video-modal-title').innerText = item.title || "Video bài giảng";
+
+      // Hỗ trợ phát trực tiếp link YouTube và Google Drive
+      let embedUrl = "";
+      const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([^&?/]+)/);
+      const driveMatch = url.match(/drive\.google\.com\/file\/d\/([^/]+)/);
+
+      if (ytMatch) {
+        embedUrl = `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1`;
+      } else if (driveMatch) {
+        embedUrl = `https://drive.google.com/file/d/${driveMatch[1]}/preview`;
+      } else {
+        window.open(url, '_blank', 'noopener,noreferrer');
+        return;
+      }
+
+      document.getElementById('video-iframe').src = embedUrl;
+      document.getElementById('video-modal').classList.remove('hidden');
+    }
+
+    function closeVideoModal() {
+      const iframe = document.getElementById('video-iframe');
+      if (iframe) iframe.src = '';
+      const modal = document.getElementById('video-modal');
+      if (modal) modal.classList.add('hidden');
     }
 
     // BXH Tương tác API
@@ -618,58 +960,52 @@
       fetch(`https://countapi.mileshilliard.com/api/v1/${isNewSession?'hit':'get'}/${dateKey}`)
         .then(r => r.json()).then(data => { if(data && data.value) document.getElementById('stat-today-visits').innerText = Number(data.value).toLocaleString('vi-VN'); }).catch(()=>{});
         
-// Cấu hình Firebase Realtime Database
-const firebaseConfig = {
-  apiKey: "AIzaSyBD71Ubgi4xuvpWfW-WJP1bVi8GK3TduGE",
-  authDomain: "ontapykhoa-6911b.firebaseapp.com",
-  databaseURL: "https://ontapykhoa-6911b-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "ontapykhoa-6911b",
-  storageBucket: "ontapykhoa-6911b.firebasestorage.app",
-  messagingSenderId: "310210759416",
-  appId: "1:310210759416:web:bc059e1cece9ac5079c90d",
-  measurementId: "G-0VPKTSF5BD"
-};
+      // Cấu hình Firebase Realtime Database
+      const firebaseConfig = {
+        apiKey: "AIzaSyBD71Ubgi4xuvpWfW-WJP1bVi8GK3TduGE",
+        authDomain: "ontapykhoa-6911b.firebaseapp.com",
+        databaseURL: "https://ontapykhoa-6911b-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "ontapykhoa-6911b",
+        storageBucket: "ontapykhoa-6911b.firebasestorage.app",
+        messagingSenderId: "310210759416",
+        appId: "1:310210759416:web:bc059e1cece9ac5079c90d",
+        measurementId: "G-0VPKTSF5BD"
+      };
 
-// Khởi tạo Firebase
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
-}
-const db = firebase.database();
+      // Khởi tạo Firebase
+      if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+      }
+      const db = firebase.database();
 
-// Ghi nhận phiên truy cập hiện tại
-const userSessionRef = db.ref('online_sessions').push();
-const connectedRef = db.ref('.info/connected');
+      // Ghi nhận phiên truy cập hiện tại
+      const userSessionRef = db.ref('online_sessions').push();
+      const connectedRef = db.ref('.info/connected');
 
-connectedRef.on('value', (snap) => {
-  if (snap.val() === true) {
-    // Khi tab kết nối: ghi nhận online
-    userSessionRef.set(true);
+      connectedRef.on('value', (snap) => {
+        if (snap.val() === true) {
+          userSessionRef.set(true);
+          userSessionRef.onDisconnect().remove();
+        }
+      });
 
-    // Khi người dùng tắt tab hoặc mất mạng: tự động xóa
-    userSessionRef.onDisconnect().remove();
-  }
-});
+      // Cập nhật số người online thực tế lên giao diện
+      db.ref('online_sessions').on('value', (snapshot) => {
+        const onlineCount = snapshot.numChildren();
+        const el = document.getElementById('stat-online-users');
+        if (el) {
+          el.innerText = (onlineCount || 1) + " người";
+        }
+      });
 
-// Cập nhật số người online thực tế lên giao diện
-db.ref('online_sessions').on('value', (snapshot) => {
-  const onlineCount = snapshot.numChildren();
-  const el = document.getElementById('stat-online-users');
-  if (el) {
-    el.innerText = (onlineCount || 1) + " người";
-  }
-});
       Papa.parse(SHEET_CSV_URL, {
         download: true, header: true, skipEmptyLines: true,
         complete: function(results) {
           const validRows = results.data.filter(q => q.content && q.optA);
           if (validRows.length > 0) {
             allQuestions = validRows;
-            
-            // Gán dữ liệu Sheet Cơ bản
             basicQuestions = allQuestions; 
             document.getElementById('count-basic').innerText = basicQuestions.length;
-            
-            // Gọi hàm tải Sheet Vận Dụng Cao
             loadAdvancedQuestions();
           }
         }
@@ -679,7 +1015,6 @@ db.ref('online_sessions').on('value', (snapshot) => {
     // Hàm tải Sheet Vận Dụng Cao (Thi Thử)
     function loadAdvancedQuestions() {
         if (!ADVANCED_SHEET_CSV_URL || ADVANCED_SHEET_CSV_URL === "LINK_CSV_CUA_TRANG_TINH_VAN_DUNG_CAO") {
-            // Fallback nếu chưa cấu hình link
             advancedQuestions = [...basicQuestions];
             document.getElementById('count-advanced').innerText = "0 (Chưa đồng bộ)";
             document.getElementById('loading').classList.add('hidden');
@@ -720,8 +1055,11 @@ db.ref('online_sessions').on('value', (snapshot) => {
         document.getElementById('result-view').classList.add('hidden');
         document.getElementById('leaderboard-view').classList.add('hidden');
         document.getElementById('timer-box').classList.add('hidden');
+        const studyView = document.getElementById('study-view');
+        if (studyView) studyView.classList.add('hidden');
         const builder = document.getElementById('exam-builder-view');
         if (builder) builder.classList.add('hidden');
+        closeVideoModal();
     }
 
     function goToHome() {
@@ -740,7 +1078,7 @@ db.ref('online_sessions').on('value', (snapshot) => {
         document.getElementById('exam-builder-view').classList.add('flex', 'flex-col');
     }
 
-        // Hàm xáo trộn thông minh: Giữ nguyên các câu hỏi chuỗi (Grouped Shuffle)
+    // Hàm xáo trộn thông minh: Giữ nguyên các câu hỏi chuỗi (Grouped Shuffle)
     function shuffleQuestions(questions) {
       let grouped = [];
       let i = 0;
@@ -750,33 +1088,28 @@ db.ref('online_sessions').on('value', (snapshot) => {
         if (match) {
           let chainLength = parseInt(match[1], 10);
           let chain = [];
-          // Gom đủ số câu của chuỗi vào một nhóm
           for (let j = 0; j < chainLength && (i + j) < questions.length; j++) {
             chain.push(questions[i + j]);
           }
           grouped.push(chain);
           i += chainLength;
         } else {
-          // Câu hỏi đơn lẻ
           grouped.push([q]);
           i++;
         }
       }
 
-      // Xáo trộn các nhóm (Fisher-Yates)
       for (let idx = grouped.length - 1; idx > 0; idx--) {
         const jdx = Math.floor(Math.random() * (idx + 1));
         [grouped[idx], grouped[jdx]] = [grouped[jdx], grouped[idx]];
       }
 
-      // Trải phẳng mảng trở lại
       let result = [];
       grouped.forEach(group => {
         result.push(...group);
       });
       return result;
     }
-
 
     // CHẾ ĐỘ LUYỆN TẬP -> SỬ DỤNG BỘ CÂU HỎI CƠ BẢN
     function startPracticeMode() {
@@ -814,13 +1147,11 @@ db.ref('online_sessions').on('value', (snapshot) => {
       document.getElementById('q-index-label').innerText = "Câu số " + (idx + 1) + ":";
       document.getElementById('q-specialty-badge').innerText = q.specialty || "Lâm sàng";
 
-            let text = q.content, img = null;
+      let text = q.content, img = null;
       const tM = text.match(/\[img:\s*(https?:\/\/[^\s\]]+)\s*\]/i);
       if (tM) { img = tM[1]; text = text.replace(tM[0], ''); }
       
-      // Ẩn mã [Chuoi...] khỏi màn hình hiển thị
       text = text.replace(/\[Chuoi\d+\]\\n/gi, '').replace(/\[Chuoi\d+\]/gi, ''); 
-      
       text = text.replaceAll(/\\n/g, '<br>').replaceAll('<br><br>', '<br>').trim();
 
       document.getElementById('content-display').innerHTML = text;
