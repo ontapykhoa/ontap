@@ -84,7 +84,7 @@
   <main id="home-dashboard" class="hidden flex-1 max-w-5xl w-full mx-auto p-4 md:p-8 flex flex-col justify-center">
     <div class="bg-gradient-to-r from-[#0f4c81] to-[#1c6ca4] text-white rounded-2xl p-6 md:p-8 shadow-lg mb-6 relative overflow-hidden">
       <div class="relative z-10 max-w-2xl">
-        <h2 class="text-xl md:text-2xl font-bold mb-2">Hệ Thống Ôn Luyện Đánh Giá Năng Lực Bác Sĩ Y Khoa</h2>
+        <h2 class="text-xl md:text-2xl font-bold mb-2">Hệ Thống Ôn Luyện Đánh Giá Năng Lực Y Khoa</h2>
         <p class="text-xs md:text-sm text-blue-100 leading-relaxed">
           Ngân hàng câu hỏi trắc nghiệm lâm sàng theo 128 vấn đề cốt lõi. Mô phỏng phần mềm thi máy tính (CBT) chuẩn hóa của Hội đồng Y khoa Quốc gia.
         </p>
@@ -138,9 +138,9 @@
           <i class="fa-solid fa-graduation-cap"></i>
         </div>
         <div>
-          <span class="inline-block text-[10px] font-bold uppercase tracking-wider bg-amber-400 text-[#0f4c81] px-2 py-0.5 rounded mb-1">Dành cho thành viên</span>
-          <h3 class="text-lg font-bold">Kho Ôn Tập Video Bài Giảng & Tài Liệu ĐGNL</h3>
-          <p class="text-xs text-emerald-100 mt-0.5">Xem video hệ thống kiến thức lâm sàng và mở khóa tài liệu học tập bằng mã Pass cá nhân.</p>
+          <span class="inline-block text-[10px] font-bold uppercase tracking-wider bg-amber-400 text-[#0f4c81] px-2 py-0.5 rounded mb-1">Dành cho thành viên VIP</span>
+          <h3 class="text-lg font-bold">Kho Video Bài Giảng & Tài Liệu</h3>
+          <p class="text-xs text-emerald-100 mt-0.5">Xem video và tài liệu ôn tập bằng code.</p>
         </div>
       </div>
       <button onclick="showStudyView()" class="px-5 py-3 bg-white hover:bg-amber-50 text-emerald-800 font-bold text-xs uppercase tracking-wider rounded-xl shadow transition flex items-center justify-center shrink-0">
@@ -380,14 +380,14 @@
               <i class="fa-solid fa-circle-play text-amber-300"></i> Kho Video Bài Giảng & Tài Liệu
             </h2>
             <p class="text-xs md:text-sm text-blue-100 mt-1">
-              Mỗi mã Pass chỉ kích hoạt duy nhất cho <strong>1 tài khoản</strong>. Sau khi mở khóa, tài khoản của bạn sẽ truy cập vĩnh viễn mọi lúc.
+              Mỗi mã code chỉ kích hoạt duy nhất cho <strong>1 tài khoản</strong>. Sau khi mở khóa, tài khoản của bạn sẽ truy cập vĩnh viễn mọi lúc.
             </p>
           </div>
         </div>
 
         <!-- Khung nhập Pass mở khóa tài liệu -->
         <div id="unlock-box" class="bg-white/10 backdrop-blur-sm p-3 rounded-xl border border-white/20 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 shrink-0">
-          <input type="text" id="study-pass-input" onkeydown="if(event.key==='Enter') submitStudyPass()" placeholder="Nhập mã Pass tài liệu..." class="bg-white text-slate-800 text-xs font-semibold px-3.5 py-2.5 rounded-lg outline-none w-full sm:w-48 focus:ring-2 focus:ring-amber-400">
+          <input type="text" id="study-pass-input" onkeydown="if(event.key==='Enter') submitStudyPass()" placeholder="Nhập code mở khóa tài liệu..." class="bg-white text-slate-800 text-xs font-semibold px-3.5 py-2.5 rounded-lg outline-none w-full sm:w-48 focus:ring-2 focus:ring-amber-400">
           <button onclick="submitStudyPass()" id="btn-unlock-docs" class="bg-amber-500 hover:bg-amber-600 text-[#0f4c81] font-bold text-xs px-4 py-2.5 rounded-lg shadow transition whitespace-nowrap flex items-center justify-center">
             <i class="fa-solid fa-key mr-1.5"></i> Mở khóa tài liệu
           </button>
