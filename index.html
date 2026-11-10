@@ -499,6 +499,18 @@
     const GAS_API_URL = "https://script.google.com/macros/s/AKfycbzB_qMY5R81I04Cw8CqhR7JZ4CFxfMrJnU5DiAmQmx9wicpOy_rZWIMWRSVs0HRjngeRg/exec";
     // =========================================================================
 
+    // Cấu hình Firebase Realtime Database
+    const FIREBASE_CONFIG = {
+      apiKey: "AIzaSyBD71Ubgi4xuvpWfW-WJP1bVi8GK3TduGE",
+      authDomain: "ontapykhoa-6911b.firebaseapp.com",
+      databaseURL: "https://ontapykhoa-6911b-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "ontapykhoa-6911b",
+      storageBucket: "ontapykhoa-6911b.firebasestorage.app",
+      messagingSenderId: "310210759416",
+      appId: "1:310210759416:web:bc059e1cece9ac5079c90d",
+      measurementId: "G-0VPKTSF5BD"
+    };
+
     let EXAM_TIME_MINUTES = 150; 
 
     const OFFICIAL_TOPICS = [
@@ -517,13 +529,84 @@
     let activeQuestions = [], currentIdx = 0, userAnswers = {}, flaggedSet = new Set();
     let currentMode = 'home', timerInterval = null, timeRemaining = 0;
     
-    // Auth State
+    // Auth & Single-Device Session State
     let currentUser = localStorage.getItem('medpass_current_user') || null;
     let authMode = 'login'; 
+    let activeSessionRef = null;
+    let activeSessionListener = null;
 
     // Study Materials State
     let studyMaterials = [];
     let isStudyUnlocked = false;
+
+    function getFirebaseDb() {
+      if (typeof firebase === 'undefined') return null;
+      if (!firebase.apps.length) {
+        firebase.initializeApp(FIREBASE_CONFIG);
+      }
+      return firebase.database();
+    }
+
+    function sanitizeFirebaseKey(str) {
+      return encodeURIComponent(String(str || "").trim().toLowerCase()).replace(/\./g, '%2E');
+    }
+
+    function generateSessionId() {
+      return Date.now() + '_' + Math.random().toString(36).substring(2, 12);
+    }
+
+    function stopDeviceSessionWatch() {
+      if (activeSessionRef && activeSessionListener) {
+        activeSessionRef.off('value', activeSessionListener);
+      }
+      activeSessionRef = null;
+      activeSessionListener = null;
+    }
+
+    // Giám sát phiên đăng nhập duy nhất trên 1 thiết bị
+    function startDeviceSessionWatch(username, isNewLogin) {
+      const db = getFirebaseDb();
+      if (!db || !username) return;
+
+      stopDeviceSessionWatch();
+
+      const safeUserKey = sanitizeFirebaseKey(username);
+      const sessionRef = db.ref('active_sessions/' + safeUserKey);
+
+      let mySessionId = localStorage.getItem('medpass_session_id');
+      if (isNewLogin || !mySessionId) {
+        mySessionId = generateSessionId();
+        localStorage.setItem('medpass_session_id', mySessionId);
+        sessionRef.set({
+          sessionId: mySessionId,
+          updatedAt: Date.now()
+        });
+      }
+
+      activeSessionRef = sessionRef;
+      activeSessionListener = sessionRef.on('value', (snap) => {
+        const data = snap.val();
+        const localSid = localStorage.getItem('medpass_session_id');
+        if (data && data.sessionId && localSid && data.sessionId !== localSid) {
+          forceLogoutByOtherDevice();
+        }
+      });
+    }
+
+    function forceLogoutByOtherDevice() {
+      stopDeviceSessionWatch();
+      currentUser = null;
+      studyMaterials = [];
+      isStudyUnlocked = false;
+      localStorage.removeItem('medpass_current_user');
+      localStorage.removeItem('medpass_session_id');
+      clearInterval(timerInterval);
+      currentMode = 'home';
+      closeVideoModal();
+      initAuth();
+      goToHome();
+      alert("⚠️ Tài khoản của bạn vừa được đăng nhập trên một thiết bị khác! Hệ thống đã tự động đăng xuất khỏi thiết bị này.");
+    }
 
     function escapeHtml(str) {
       return String(str || "")
@@ -624,16 +707,35 @@
     function doLogin(username) {
         currentUser = username;
         localStorage.setItem('medpass_current_user', username);
+        startDeviceSessionWatch(username, true);
         initAuth();
         closeAuthModal();
     }
 
     function logout() {
+        const prevUser = currentUser;
+        const localSid = localStorage.getItem('medpass_session_id');
+        stopDeviceSessionWatch();
+
+        if (prevUser && localSid) {
+          const db = getFirebaseDb();
+          if (db) {
+            const ref = db.ref('active_sessions/' + sanitizeFirebaseKey(prevUser));
+            ref.once('value', (snap) => {
+              if (snap.val() && snap.val().sessionId === localSid) {
+                ref.remove();
+              }
+            });
+          }
+        }
+
         currentUser = null;
         studyMaterials = [];
         isStudyUnlocked = false;
         localStorage.removeItem('medpass_current_user');
+        localStorage.removeItem('medpass_session_id');
         initAuth();
+        currentMode = 'home';
         goToHome();
     }
 
@@ -677,7 +779,6 @@
           isStudyUnlocked = Boolean(res.unlocked);
           studyMaterials = Array.isArray(res.data) ? res.data : [];
 
-          // Cập nhật trạng thái ổ khóa trên giao diện
           if (isStudyUnlocked) {
             document.getElementById('unlock-box').classList.add('hidden');
             document.getElementById('unlocked-badge').classList.remove('hidden');
@@ -686,7 +787,6 @@
             document.getElementById('unlocked-badge').classList.add('hidden');
           }
 
-          // Tạo danh sách lọc chuyên khoa tự động từ dữ liệu sheet OnTap
           const filterSelect = document.getElementById('study-specialty-filter');
           const currentFilter = filterSelect.value;
           const specialties = [...new Set(studyMaterials.map(m => (m.specialty || "Chung").trim()))];
@@ -819,7 +919,6 @@
       const url = item.videoUrl.trim();
       document.getElementById('video-modal-title').innerText = item.title || "Video bài giảng";
 
-      // Hỗ trợ phát trực tiếp link YouTube và Google Drive
       let embedUrl = "";
       const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([^&?/]+)/);
       const driveMatch = url.match(/drive\.google\.com\/file\/d\/([^/]+)/);
@@ -890,7 +989,6 @@
             if(i === 1) rankBadge = '<i class="fa-solid fa-medal text-slate-400 text-lg"></i>';
             if(i === 2) rankBadge = '<i class="fa-solid fa-medal text-amber-700 text-lg"></i>';
             
-            // Format ngày giờ Việt Nam
             const formattedDate = new Date(r.date).toLocaleString('vi-VN', {hour: '2-digit', minute:'2-digit', day: '2-digit', month: '2-digit', year: 'numeric'});
             const timeStr = r.timeTaken ? Math.floor(r.timeTaken/60) + 'p ' + (r.timeTaken%60) + 's' : '--';
 
@@ -960,43 +1058,33 @@
       fetch(`https://countapi.mileshilliard.com/api/v1/${isNewSession?'hit':'get'}/${dateKey}`)
         .then(r => r.json()).then(data => { if(data && data.value) document.getElementById('stat-today-visits').innerText = Number(data.value).toLocaleString('vi-VN'); }).catch(()=>{});
         
-      // Cấu hình Firebase Realtime Database
-      const firebaseConfig = {
-        apiKey: "AIzaSyBD71Ubgi4xuvpWfW-WJP1bVi8GK3TduGE",
-        authDomain: "ontapykhoa-6911b.firebaseapp.com",
-        databaseURL: "https://ontapykhoa-6911b-default-rtdb.asia-southeast1.firebasedatabase.app",
-        projectId: "ontapykhoa-6911b",
-        storageBucket: "ontapykhoa-6911b.firebasestorage.app",
-        messagingSenderId: "310210759416",
-        appId: "1:310210759416:web:bc059e1cece9ac5079c90d",
-        measurementId: "G-0VPKTSF5BD"
-      };
+      const db = getFirebaseDb();
+      if (db) {
+        // Kích hoạt giám sát 1 thiết bị nếu người dùng đã đăng nhập sẵn từ trước
+        if (currentUser) {
+          startDeviceSessionWatch(currentUser, false);
+        }
 
-      // Khởi tạo Firebase
-      if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
+        // Ghi nhận phiên truy cập hiện tại (đếm online)
+        const userSessionRef = db.ref('online_sessions').push();
+        const connectedRef = db.ref('.info/connected');
+
+        connectedRef.on('value', (snap) => {
+          if (snap.val() === true) {
+            userSessionRef.set(true);
+            userSessionRef.onDisconnect().remove();
+          }
+        });
+
+        // Cập nhật số người online thực tế lên giao diện
+        db.ref('online_sessions').on('value', (snapshot) => {
+          const onlineCount = snapshot.numChildren();
+          const el = document.getElementById('stat-online-users');
+          if (el) {
+            el.innerText = (onlineCount || 1) + " người";
+          }
+        });
       }
-      const db = firebase.database();
-
-      // Ghi nhận phiên truy cập hiện tại
-      const userSessionRef = db.ref('online_sessions').push();
-      const connectedRef = db.ref('.info/connected');
-
-      connectedRef.on('value', (snap) => {
-        if (snap.val() === true) {
-          userSessionRef.set(true);
-          userSessionRef.onDisconnect().remove();
-        }
-      });
-
-      // Cập nhật số người online thực tế lên giao diện
-      db.ref('online_sessions').on('value', (snapshot) => {
-        const onlineCount = snapshot.numChildren();
-        const el = document.getElementById('stat-online-users');
-        if (el) {
-          el.innerText = (onlineCount || 1) + " người";
-        }
-      });
 
       Papa.parse(SHEET_CSV_URL, {
         download: true, header: true, skipEmptyLines: true,
